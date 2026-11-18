@@ -239,7 +239,7 @@ img { display: block; max-width: 100%; }
   position: absolute; inset: 0;
   background-size: cover;
   background-position: center top;
-  opacity: .18;
+  opacity: 1;
 }
 .hero-overlay {
   position: absolute; inset: 0;
@@ -507,9 +507,9 @@ img { display: block; max-width: 100%; }
 }
 .detalhe-hero-bg {
   position: absolute; inset: 0;
-  background-size: cover;
+  background: url('assets/bg-neural.jpg') center/cover no-repeat;
   background-position: center;
-  opacity: .22;
+  opacity: 1;
 }
 .detalhe-hero-overlay {
   position: absolute; inset: 0;
@@ -1097,7 +1097,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* cover colors for variety */
-.cover-neuro { background: linear-gradient(145deg, #061a06 0%, #0d2a0d 50%, #071a07 100%); }
+.cover-neuro { background: #061a06 url('assets/afo-neurologica-cover.jpg') center/cover no-repeat; }
 .cover-neuro-2 { background: linear-gradient(145deg, #0a1a06 0%, #152a08 100%); }
 .cover-ped { background: linear-gradient(145deg, #061020 0%, #0d1f3a 100%); }
 .cover-orto { background: linear-gradient(145deg, #1a0f06 0%, #2a1a08 100%); }
@@ -1165,7 +1165,7 @@ img { display: block; max-width: 100%; }
       <!-- HERO -->
       <section class="hero">
         <div class="hero-bg"></div>
-        <div class="hero-cover-img" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22500%22><defs><radialGradient id=%22r%22 cx=%2260%25%22 cy=%2240%25%22><stop offset=%220%25%22 stop-color=%22%233DB54A%22 stop-opacity=%22.3%22/><stop offset=%22100%25%22 stop-color=%22%230a0d0a%22/></radialGradient></defs><rect fill=%22url(%23r)%22 width=%22800%22 height=%22500%22/></svg>')"></div>
+        <div class="hero-cover-img" style="background-image:url('assets/bg-neural.jpg')"></div>
         <div class="hero-overlay"></div>
         <div class="hero-overlay-bottom"></div>
         <div class="hero-content">
@@ -1201,7 +1201,7 @@ img { display: block; max-width: 100%; }
         <div class="card-row-scroll">
           <div class="cw-card" onclick="goAula()">
             <div class="cw-thumb">
-              <div class="cw-cover-art cover-neuro">🧠</div>
+              <div class="cw-cover-art cover-neuro"></div>
               <div class="cw-overlay"></div>
               <div class="cw-time-badge">12:34</div>
             </div>
@@ -1213,7 +1213,7 @@ img { display: block; max-width: 100%; }
           </div>
           <div class="cw-card">
             <div class="cw-thumb">
-              <div class="cw-cover-art cover-ped">👶</div>
+              <div class="cw-cover-art cover-ped"></div>
               <div class="cw-overlay"></div>
               <div class="cw-time-badge">08:12</div>
             </div>
@@ -1225,7 +1225,7 @@ img { display: block; max-width: 100%; }
           </div>
           <div class="cw-card">
             <div class="cw-thumb">
-              <div class="cw-cover-art cover-ia">🤖</div>
+              <div class="cw-cover-art cover-ia"></div>
               <div class="cw-overlay"></div>
               <div class="cw-time-badge">22:05</div>
             </div>
@@ -1248,7 +1248,7 @@ img { display: block; max-width: 100%; }
 
           <div class="course-card" onclick="goDetalhe('afo-neurologica')">
             <div class="course-card-thumb">
-              <div class="course-cover course-cover-gradient cover-neuro">🧠</div>
+              <div class="course-cover course-cover-gradient cover-neuro"></div>
               <div class="course-cover-overlay"></div>
               <div class="course-card-play"><div class="play-circle">▶</div></div>
             </div>
@@ -1265,7 +1265,7 @@ img { display: block; max-width: 100%; }
 
           <div class="course-card" onclick="goDetalhe('afo-pediatrica')">
             <div class="course-card-thumb">
-              <div class="course-cover course-cover-gradient cover-ped">👶</div>
+              <div class="course-cover course-cover-gradient cover-ped"></div>
               <div class="course-cover-overlay"></div>
               <div class="course-card-play"><div class="play-circle">▶</div></div>
             </div>
@@ -1282,7 +1282,7 @@ img { display: block; max-width: 100%; }
 
           <div class="course-card">
             <div class="course-card-thumb">
-              <div class="course-cover course-cover-gradient cover-ia">🤖</div>
+              <div class="course-cover course-cover-gradient cover-ia"></div>
               <div class="course-cover-overlay"></div>
               <div class="course-card-play"><div class="play-circle">▶</div></div>
               <div class="course-card-locked">🔒 Bloqueado</div>
@@ -1299,7 +1299,7 @@ img { display: block; max-width: 100%; }
 
           <div class="course-card">
             <div class="course-card-thumb">
-              <div class="course-cover course-cover-gradient cover-orto">🦿</div>
+              <div class="course-cover course-cover-gradient cover-orto"></div>
               <div class="course-cover-overlay"></div>
               <div class="course-card-play"><div class="play-circle">▶</div></div>
               <div class="course-card-locked">🔒 Bloqueado</div>
@@ -1325,7 +1325,7 @@ img { display: block; max-width: 100%; }
         <div class="card-row-scroll">
           <div class="course-card">
             <div class="course-card-thumb">
-              <div class="course-cover course-cover-gradient cover-orto">🦿</div>
+              <div class="course-cover course-cover-gradient cover-orto"></div>
               <div class="course-cover-overlay"></div>
               <div class="course-card-play"><div class="play-circle">▶</div></div>
               <div class="course-card-locked">🔒</div>
@@ -1339,7 +1339,7 @@ img { display: block; max-width: 100%; }
           </div>
           <div class="course-card">
             <div class="course-card-thumb">
-              <div class="course-cover course-cover-gradient cover-ia">🤖</div>
+              <div class="course-cover course-cover-gradient cover-ia"></div>
               <div class="course-cover-overlay"></div>
               <div class="course-card-play"><div class="play-circle">▶</div></div>
             </div>
@@ -1352,7 +1352,7 @@ img { display: block; max-width: 100%; }
           </div>
           <div class="course-card">
             <div class="course-card-thumb">
-              <div class="course-cover course-cover-gradient cover-neuro-2">🧬</div>
+              <div class="course-cover course-cover-gradient cover-neuro-2"></div>
               <div class="course-cover-overlay"></div>
               <div class="course-card-play"><div class="play-circle">▶</div></div>
             </div>
@@ -1378,7 +1378,7 @@ img { display: block; max-width: 100%; }
 
         <div class="course-card" onclick="goDetalhe('afo-neurologica')" style="flex:none">
           <div class="course-card-thumb">
-            <div class="course-cover course-cover-gradient cover-neuro">🧠</div>
+            <div class="course-cover course-cover-gradient cover-neuro"></div>
             <div class="course-cover-overlay"></div>
             <div class="course-card-play"><div class="play-circle">▶</div></div>
           </div>
@@ -1395,7 +1395,7 @@ img { display: block; max-width: 100%; }
 
         <div class="course-card" onclick="goDetalhe('afo-pediatrica')" style="flex:none">
           <div class="course-card-thumb">
-            <div class="course-cover course-cover-gradient cover-ped">👶</div>
+            <div class="course-cover course-cover-gradient cover-ped"></div>
             <div class="course-cover-overlay"></div>
             <div class="course-card-play"><div class="play-circle">▶</div></div>
           </div>
@@ -1412,7 +1412,7 @@ img { display: block; max-width: 100%; }
 
         <div class="course-card" style="flex:none;opacity:.5">
           <div class="course-card-thumb">
-            <div class="course-cover course-cover-gradient cover-ia">🤖</div>
+            <div class="course-cover course-cover-gradient cover-ia"></div>
             <div class="course-cover-overlay"></div>
             <div class="course-card-locked">🔒 Bloqueado</div>
           </div>
@@ -1998,7 +1998,7 @@ function goDetalhe(id) {
   document.getElementById('detalhe-title').textContent = c.title;
   document.getElementById('detalhe-category').textContent = c.category;
   const cover = document.getElementById('detalhe-cover-preview');
-  cover.textContent = c.icon;
+  cover.textContent = '';
   cover.className = 'detalhe-cover-preview ' + c.color;
   document.getElementById('detalhe-meta-lessons').textContent = c.lessons;
   document.getElementById('detalhe-meta-duration').textContent = c.duration;
