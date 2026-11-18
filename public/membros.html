@@ -1,0 +1,2054 @@
+<title>Escola de Tecnologias Assistidas</title>
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap">
+
+<style>
+/* ── TOKENS ── */
+:root {
+  --verde: #3DB54A;
+  --verde-dim: #2d8f38;
+  --verde-glow: rgba(61,181,74,0.12);
+  --verde-border: rgba(61,181,74,0.3);
+  --bg: #0a0d0a;
+  --bg-2: #111511;
+  --bg-card: #161c16;
+  --bg-card2: #1c231c;
+  --fg: #e8f0e8;
+  --fg-muted: #9ca3af;
+  --fg-dim: #6b7280;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font-d: 'Barlow Condensed', sans-serif;
+  --font-b: 'Inter', sans-serif;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-b);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font-b); cursor: pointer; }
+img { display: block; max-width: 100%; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: flex; }
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+#screen-login {
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.login-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(61,181,74,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 80% 20%, rgba(61,181,74,0.04) 0%, transparent 70%),
+    var(--bg);
+}
+.login-box {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 400px;
+}
+.login-logo {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 36px;
+  justify-content: center;
+}
+.login-logo-icon {
+  width: 44px; height: 44px;
+  background: var(--verde);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.login-logo-text {
+  font-family: var(--font-d);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 1.1;
+}
+.login-logo-text span { display: block; font-size: 11px; font-weight: 400; color: var(--fg-muted); letter-spacing: .1em; text-transform: uppercase; }
+.login-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+}
+.login-title { font-family: var(--font-d); font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.login-sub { color: var(--fg-muted); font-size: 13px; margin-bottom: 28px; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--fg-muted); display: block; margin-bottom: 7px; }
+.form-input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  color: var(--fg);
+  font-size: 14px;
+  font-family: var(--font-b);
+  outline: none;
+  transition: border-color .15s;
+}
+.form-input:focus { border-color: var(--verde-border); }
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: var(--verde);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  margin-top: 8px;
+  transition: background .15s, transform .1s;
+}
+.btn-primary:hover { background: var(--verde-dim); }
+.btn-primary:active { transform: scale(.98); }
+.login-footer { text-align: center; font-size: 12px; color: var(--fg-dim); margin-top: 20px; }
+.login-footer a { color: var(--verde); }
+
+/* ══════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════ */
+#screen-app {
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* TOP NAV */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 64px;
+  display: flex; align-items: center;
+  padding: 0 max(24px, env(safe-area-inset-left,0px)) 0 max(24px,env(safe-area-inset-right,0px));
+  gap: 32px;
+  background: linear-gradient(to bottom, rgba(10,13,10,0.98) 0%, rgba(10,13,10,0.0) 100%);
+  transition: background .3s;
+}
+.topnav.scrolled { background: rgba(10,13,10,0.97); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.nav-brand-icon {
+  width: 32px; height: 32px;
+  background: var(--verde);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.nav-brand-name {
+  font-family: var(--font-d);
+  font-size: 17px; font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+  flex: 1;
+}
+.nav-link-btn {
+  padding: 7px 14px;
+  border: none;
+  background: none;
+  color: var(--fg-muted);
+  font-size: 13.5px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: color .15s, background .15s;
+  white-space: nowrap;
+}
+.nav-link-btn:hover { color: var(--fg); background: rgba(255,255,255,0.05); }
+.nav-link-btn.active { color: var(--fg); }
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.nav-search-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: none;
+  color: var(--fg-muted);
+  font-size: 17px;
+  border-radius: 50%;
+  transition: color .15s;
+}
+.nav-search-btn:hover { color: var(--fg); }
+.nav-avatar {
+  width: 34px; height: 34px;
+  background: var(--verde-dim);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 13px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 2px solid transparent;
+  transition: border-color .15s;
+}
+.nav-avatar:hover { border-color: var(--verde); }
+.nav-mobile-btn { display: none; background: none; border: none; color: var(--fg); font-size: 20px; }
+
+/* APP CONTENT */
+.app-content {
+  padding-top: 64px;
+  flex: 1;
+}
+
+/* PAGE */
+.page { display: none; }
+.page.visible { display: block; }
+
+/* ══════════════════════════════════════
+   HERO BANNER
+══════════════════════════════════════ */
+.hero {
+  position: relative;
+  height: 72vh; min-height: 480px; max-height: 680px;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #071a07 0%, #0a1a0a 40%, #061206 100%);
+}
+.hero-cover-img {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center top;
+  opacity: .18;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(10,13,10,.92) 0%, rgba(10,13,10,.7) 40%, rgba(10,13,10,.2) 70%, transparent 100%);
+}
+.hero-overlay-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 200px;
+  background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
+}
+.hero-content {
+  position: absolute;
+  left: max(48px, env(safe-area-inset-left,0px));
+  right: max(48px, env(safe-area-inset-right,0px));
+  bottom: 60px;
+  max-width: 580px;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--verde);
+  background: var(--verde-glow);
+  border: 1px solid var(--verde-border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  margin-bottom: 14px;
+}
+.hero-title {
+  font-family: var(--font-d);
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: .01em;
+  margin-bottom: 14px;
+  text-wrap: balance;
+}
+.hero-desc {
+  font-size: 15px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 440px;
+}
+.hero-meta {
+  display: flex; align-items: center; gap: 16px;
+  font-size: 13px; color: var(--fg-muted);
+  margin-bottom: 24px;
+}
+.hero-meta-dot { width: 4px; height: 4px; background: var(--fg-dim); border-radius: 50%; }
+.hero-actions { display: flex; gap: 12px; align-items: center; }
+.btn-hero {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 13px 28px;
+  border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  border: none;
+  transition: all .15s;
+}
+.btn-hero-primary { background: var(--verde); color: #fff; }
+.btn-hero-primary:hover { background: var(--verde-dim); transform: scale(1.02); }
+.btn-hero-secondary {
+  background: rgba(255,255,255,0.12);
+  color: var(--fg);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.btn-hero-secondary:hover { background: rgba(255,255,255,0.18); }
+.hero-progress-info {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 16px;
+  font-size: 12.5px; color: var(--fg-muted);
+}
+.hero-progress-track {
+  flex: 1; max-width: 160px;
+  height: 4px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.hero-progress-fill { height: 100%; background: var(--verde); border-radius: 99px; }
+
+/* ══════════════════════════════════════
+   CONTENT ROWS (Netflix style)
+══════════════════════════════════════ */
+.content-section { padding: 0 max(24px, env(safe-area-inset-left,0px)); margin-bottom: 40px; }
+.row-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.row-title {
+  font-family: var(--font-d);
+  font-size: 22px; font-weight: 700;
+  letter-spacing: .02em;
+}
+.row-see-all {
+  font-size: 12.5px; color: var(--verde);
+  background: none; border: none;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.row-see-all:hover { opacity: .7; }
+
+/* Horizontal scroll row */
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.card-row-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.card-row-scroll::-webkit-scrollbar { height: 4px; }
+.card-row-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+
+/* ══════════════════════════════════════
+   COURSE CARD (cover style)
+══════════════════════════════════════ */
+.course-card {
+  flex: 0 0 220px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: transform .2s, box-shadow .2s;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+.course-card:hover {
+  transform: scale(1.03) translateY(-3px);
+  box-shadow: 0 20px 50px rgba(0,0,0,.7);
+  border-color: var(--border-hover);
+  z-index: 10;
+}
+.course-card-thumb {
+  position: relative;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+}
+.course-cover {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+}
+.course-cover-gradient {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+}
+.course-cover-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(22,28,22,.95) 100%);
+}
+.course-card-play {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity .2s;
+  background: rgba(0,0,0,.3);
+}
+.course-card:hover .course-card-play { opacity: 1; }
+.play-circle {
+  width: 48px; height: 48px;
+  background: rgba(255,255,255,.95);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  color: #0a0d0a;
+}
+.course-card-body {
+  padding: 12px 14px 14px;
+  flex: 1;
+  display: flex; flex-direction: column;
+}
+.course-card-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--verde);
+  margin-bottom: 5px;
+}
+.course-card-name {
+  font-size: 13.5px; font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.course-card-meta { font-size: 11.5px; color: var(--fg-dim); margin-bottom: 10px; }
+.course-card-progress { margin-top: auto; }
+.progress-track {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill { height: 100%; background: var(--verde); border-radius: 99px; }
+.progress-label { font-size: 11px; color: var(--fg-dim); margin-top: 5px; }
+.course-card-locked {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(0,0,0,.7);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: var(--fg-muted);
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* Wide card for continue watching */
+.cw-card {
+  flex: 0 0 320px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: transform .2s, border-color .2s;
+}
+.cw-card:hover { transform: scale(1.02); border-color: var(--border-hover); }
+.cw-thumb {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #040a04;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  overflow: hidden;
+}
+.cw-cover-art {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+}
+.cw-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.7) 100%);
+}
+.cw-time-badge {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(0,0,0,.8);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 11px; color: var(--fg-muted);
+}
+.cw-progress-bar { height: 3px; background: var(--verde); }
+.cw-body { padding: 12px 14px 14px; }
+.cw-lesson { font-size: 11.5px; color: var(--fg-dim); margin-bottom: 3px; }
+.cw-title { font-size: 13.5px; font-weight: 500; }
+
+/* ══════════════════════════════════════
+   COURSE DETAIL PAGE
+══════════════════════════════════════ */
+#page-detalhe { padding: 0; }
+.detalhe-hero {
+  position: relative;
+  height: 68vh; min-height: 440px; max-height: 640px;
+  overflow: hidden;
+}
+.detalhe-hero-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: .22;
+}
+.detalhe-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(10,13,10,1) 0%, rgba(10,13,10,.8) 45%, rgba(10,13,10,.3) 100%);
+}
+.detalhe-hero-overlay-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 300px;
+  background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
+}
+.detalhe-cover-preview {
+  position: absolute;
+  right: max(80px, env(safe-area-inset-right,0px));
+  top: 50%; transform: translateY(-50%);
+  width: clamp(220px, 25vw, 320px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.8);
+  border: 1px solid rgba(255,255,255,.1);
+  aspect-ratio: 2/3;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80px;
+  background: linear-gradient(160deg, #0d1a0d 0%, #071007 100%);
+}
+.detalhe-content {
+  position: absolute;
+  left: max(60px, env(safe-area-inset-left,0px));
+  bottom: 60px;
+  max-width: 540px;
+}
+.detalhe-category {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--verde); margin-bottom: 10px;
+}
+.detalhe-title {
+  font-family: var(--font-d);
+  font-size: clamp(32px, 4.5vw, 54px);
+  font-weight: 900; line-height: 1.0;
+  letter-spacing: .01em;
+  margin-bottom: 14px;
+  text-wrap: balance;
+}
+.detalhe-meta {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px;
+  font-size: 13px; color: var(--fg-muted);
+  margin-bottom: 20px;
+}
+.detalhe-rating {
+  color: #f5c518;
+  display: flex; align-items: center; gap: 5px;
+}
+.detalhe-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-detalhe-play {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 32px;
+  background: var(--verde);
+  border: none; border-radius: 8px;
+  color: #fff; font-size: 14px; font-weight: 600;
+  transition: background .15s, transform .1s;
+}
+.btn-detalhe-play:hover { background: var(--verde-dim); transform: scale(1.02); }
+.btn-detalhe-info {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 24px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  color: var(--fg); font-size: 14px; font-weight: 500;
+  transition: background .15s;
+}
+.btn-detalhe-info:hover { background: rgba(255,255,255,0.18); }
+
+/* detail body */
+.detalhe-body {
+  padding: 0 max(60px, env(safe-area-inset-left,0px)) 60px;
+}
+.detalhe-columns {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 48px;
+  align-items: start;
+}
+.detalhe-desc-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg-dim); margin-bottom: 10px;
+}
+.detalhe-desc {
+  font-size: 14.5px; line-height: 1.7; color: var(--fg-muted);
+  margin-bottom: 32px;
+}
+.detalhe-outcomes {
+  margin-bottom: 32px;
+}
+.outcome-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13.5px; padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-muted);
+}
+.outcome-item:last-child { border-bottom: none; }
+.outcome-check { color: var(--verde); flex-shrink: 0; margin-top: 2px; }
+
+/* curriculum */
+.curriculum-title {
+  font-family: var(--font-d); font-size: 24px; font-weight: 700;
+  margin-bottom: 16px;
+}
+.module-accordion {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.module-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: background .15s;
+}
+.module-header:hover { background: var(--bg-card2); }
+.module-header-left { display: flex; align-items: center; gap: 12px; }
+.module-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--verde-glow);
+  border: 1px solid var(--verde-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: var(--verde);
+  flex-shrink: 0;
+}
+.module-name { font-size: 14px; font-weight: 600; }
+.module-info { font-size: 12px; color: var(--fg-dim); }
+.module-chevron { color: var(--fg-dim); font-size: 13px; transition: transform .2s; }
+.module-accordion.open .module-chevron { transform: rotate(180deg); }
+.module-lessons { display: none; }
+.module-accordion.open .module-lessons { display: block; }
+.lesson-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 18px;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .15s;
+  background: var(--bg);
+}
+.lesson-row:hover { background: var(--bg-2); }
+.lesson-num { width: 24px; text-align: center; font-size: 12px; color: var(--fg-dim); flex-shrink: 0; }
+.lesson-check-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0;
+}
+.lesson-check-icon.done { background: var(--verde); border-color: var(--verde); }
+.lesson-row-title { flex: 1; font-size: 13px; }
+.lesson-row-dur { font-size: 12px; color: var(--fg-dim); flex-shrink: 0; }
+.lesson-row-free {
+  font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--verde); background: var(--verde-glow);
+  border: 1px solid var(--verde-border);
+  border-radius: 3px; padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+/* sidebar info */
+.detalhe-sidebar {
+  position: sticky; top: 84px;
+}
+.info-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.info-card-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  min-height: 140px;
+}
+.info-card-body { padding: 20px; }
+.info-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-row-icon { font-size: 16px; width: 24px; text-align: center; color: var(--fg-muted); }
+.info-row-label { color: var(--fg-muted); flex: 1; }
+.info-row-value { font-weight: 500; }
+.btn-enroll {
+  width: 100%; padding: 13px;
+  background: var(--verde);
+  border: none; border-radius: var(--radius-sm);
+  color: #fff; font-size: 14px; font-weight: 600;
+  margin-top: 16px;
+  transition: background .15s;
+}
+.btn-enroll:hover { background: var(--verde-dim); }
+
+/* instructor */
+.instructor-card {
+  margin-top: 32px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.instructor-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.instructor-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--verde-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.instructor-name { font-weight: 600; font-size: 15px; }
+.instructor-role { font-size: 12px; color: var(--fg-dim); }
+.instructor-bio { font-size: 13.5px; color: var(--fg-muted); line-height: 1.6; }
+
+/* ══════════════════════════════════════
+   PLAYER PAGE
+══════════════════════════════════════ */
+#page-aula {
+  display: none;
+  grid-template-columns: 1fr 320px;
+  min-height: calc(100vh - 64px);
+  gap: 0;
+}
+#page-aula.visible { display: grid; }
+.player-main { padding: 24px 24px 40px 24px; }
+.player-wrap {
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.player-mockup {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; color: var(--fg-muted); width: 100%;
+}
+.player-play-btn {
+  width: 68px; height: 68px;
+  background: rgba(255,255,255,.95);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #0a0d0a; font-size: 26px;
+  cursor: pointer;
+  border: none;
+  transition: transform .15s;
+}
+.player-play-btn:hover { transform: scale(1.08); }
+.player-label { font-size: 13.5px; }
+.player-controls {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 10px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 100%);
+  display: flex; align-items: center; gap: 10px;
+}
+.player-timeline {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,.2);
+  border-radius: 99px;
+  position: relative; cursor: pointer;
+}
+.player-progress { width: 35%; height: 100%; background: var(--verde); border-radius: 99px; }
+.player-ctrl-btn { background: none; border: none; color: var(--fg); font-size: 16px; }
+.player-time { font-size: 12px; color: var(--fg-muted); white-space: nowrap; }
+.player-info { margin-bottom: 16px; }
+.player-course-name { font-size: 12px; color: var(--verde); margin-bottom: 4px; }
+.player-lesson-title {
+  font-family: var(--font-d); font-size: 24px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.player-lesson-meta { font-size: 13px; color: var(--fg-dim); }
+.player-nav-btns { display: flex; gap: 10px; margin-top: 16px; }
+.btn-nav {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px; font-weight: 500;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--fg-muted);
+  transition: all .15s;
+}
+.btn-nav:hover { border-color: var(--border-hover); color: var(--fg); }
+.btn-nav-next {
+  background: var(--verde-glow);
+  border-color: var(--verde-border);
+  color: var(--verde);
+}
+.btn-nav-next:hover { background: rgba(61,181,74,0.2); }
+.player-tabs {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.player-tab {
+  padding: 10px 18px;
+  font-size: 13.5px; font-weight: 500;
+  color: var(--fg-muted);
+  background: none; border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color .15s;
+  margin-bottom: -1px;
+}
+.player-tab.active { color: var(--verde); border-bottom-color: var(--verde); }
+.player-materials-list { display: flex; flex-direction: column; gap: 8px; }
+.material-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.material-item:hover { border-color: var(--border-hover); }
+.material-icon { font-size: 20px; }
+.material-name { flex: 1; font-size: 13.5px; }
+.material-size { font-size: 11px; color: var(--fg-dim); }
+
+/* player sidebar */
+.player-sidebar {
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
+  position: sticky; top: 64px;
+}
+.player-sidebar-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  position: sticky; top: 0; z-index: 1;
+}
+.player-sidebar-title { font-family: var(--font-d); font-size: 16px; font-weight: 700; }
+.player-sidebar-progress { font-size: 12px; color: var(--fg-dim); margin-top: 2px; }
+.sidebar-module-label {
+  padding: 10px 16px;
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg-dim);
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-lesson {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .15s;
+}
+.sidebar-lesson:hover { background: var(--bg-2); }
+.sidebar-lesson.active { background: var(--verde-glow); }
+.sidebar-lesson-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; flex-shrink: 0;
+}
+.sidebar-lesson-check.done { background: var(--verde); border-color: var(--verde); }
+.sidebar-lesson-check.current { border-color: var(--verde); color: var(--verde); }
+.sidebar-lesson-info { flex: 1; min-width: 0; }
+.sidebar-lesson-title { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-lesson-dur { font-size: 11px; color: var(--fg-dim); }
+
+/* ══════════════════════════════════════
+   MATERIAIS PAGE
+══════════════════════════════════════ */
+.mat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+.mat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.mat-card:hover { border-color: var(--border-hover); }
+.mat-icon {
+  width: 44px; height: 44px;
+  background: var(--bg-card2);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.mat-info { flex: 1; min-width: 0; }
+.mat-name { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; }
+.mat-meta { font-size: 12px; color: var(--fg-dim); }
+.mat-dl { font-size: 18px; color: var(--fg-muted); }
+
+/* ══════════════════════════════════════
+   CERTIFICADOS
+══════════════════════════════════════ */
+.cert-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .15s, transform .2s;
+}
+.cert-card:hover { border-color: var(--verde-border); transform: translateY(-3px); }
+.cert-preview {
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #071a07 0%, #0a1a0a 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  position: relative;
+}
+.cert-badge-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px;
+}
+.cert-logo-mini { font-family: var(--font-d); font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--verde); }
+.cert-title-mini { font-family: var(--font-d); font-size: 16px; font-weight: 900; letter-spacing: .03em; text-align: center; padding: 0 16px; }
+.cert-line { width: 40px; height: 2px; background: var(--verde); }
+.cert-name-mini { font-size: 11px; color: var(--fg-muted); }
+.cert-body { padding: 14px 16px; }
+.cert-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.cert-meta { font-size: 12px; color: var(--fg-dim); }
+.cert-actions { display: flex; gap: 8px; margin-top: 12px; }
+.btn-sm {
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12.5px; font-weight: 500;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--fg-muted);
+  transition: all .15s;
+  cursor: pointer;
+}
+.btn-sm:hover { border-color: var(--border-hover); color: var(--fg); }
+.btn-sm-primary {
+  border-color: var(--verde-border);
+  color: var(--verde);
+  background: var(--verde-glow);
+}
+.btn-sm-primary:hover { background: rgba(61,181,74,0.2); }
+.cert-locked-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  opacity: .5;
+}
+.cert-locked-preview {
+  aspect-ratio: 4/3;
+  background: var(--bg-2);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  margin-bottom: 14px;
+}
+
+/* ══════════════════════════════════════
+   PERFIL PAGE
+══════════════════════════════════════ */
+.perfil-hero {
+  height: 200px;
+  background: linear-gradient(135deg, #071a07 0%, #0a2a0a 100%);
+  position: relative;
+  overflow: hidden;
+}
+.perfil-hero-pattern {
+  position: absolute; inset: 0;
+  opacity: .15;
+  background-image: radial-gradient(circle, var(--verde) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.perfil-info-row {
+  padding: 0 32px;
+  display: flex; align-items: flex-end; gap: 20px;
+  margin-top: -40px;
+  margin-bottom: 24px;
+}
+.perfil-avatar-lg {
+  width: 80px; height: 80px;
+  background: var(--verde-dim);
+  border-radius: 50%;
+  border: 4px solid var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.perfil-name-block { flex: 1; padding-bottom: 4px; }
+.perfil-name { font-family: var(--font-d); font-size: 26px; font-weight: 700; }
+.perfil-email { font-size: 13px; color: var(--fg-muted); }
+.perfil-body { padding: 0 32px 60px; }
+.perfil-section { margin-bottom: 32px; }
+.perfil-section-title { font-family: var(--font-d); font-size: 20px; font-weight: 700; margin-bottom: 14px; }
+.perfil-stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px;
+}
+.perfil-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.perfil-stat-label { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-dim); margin-bottom: 6px; }
+.perfil-stat-value { font-family: var(--font-d); font-size: 30px; font-weight: 700; }
+.perfil-stat-sub { font-size: 12px; color: var(--verde); margin-top: 2px; }
+.perfil-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-muted); }
+.form-field input, .form-field select {
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 12px;
+  color: var(--fg); font-size: 13.5px; font-family: var(--font-b);
+  outline: none; transition: border-color .15s;
+}
+.form-field input:focus { border-color: var(--verde-border); }
+.btn-save {
+  margin-top: 20px; padding: 11px 28px;
+  background: var(--verde); border: none; border-radius: var(--radius-sm);
+  color: #fff; font-size: 14px; font-weight: 600;
+  transition: background .15s;
+}
+.btn-save:hover { background: var(--verde-dim); }
+.perfil-signout {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg-muted); font-size: 14px;
+  cursor: pointer; width: 100%;
+  transition: border-color .15s, color .15s;
+}
+.perfil-signout:hover { border-color: rgba(239,68,68,.3); color: #ef4444; }
+
+/* ══════════════════════════════════════
+   GENERAL PAGE PADDING
+══════════════════════════════════════ */
+.padded-page {
+  padding: 36px max(32px, env(safe-area-inset-left,0px)) 60px;
+}
+.padded-page .page-header { margin-bottom: 28px; }
+.page-title { font-family: var(--font-d); font-size: 32px; font-weight: 700; letter-spacing: .02em; margin-bottom: 4px; }
+.page-sub { font-size: 13.5px; color: var(--fg-muted); }
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .detalhe-cover-preview { display: none; }
+  .detalhe-columns { grid-template-columns: 1fr; }
+  .detalhe-sidebar { position: static; }
+  .detalhe-content { left: max(24px, env(safe-area-inset-left,0px)); right: 24px; }
+  .detalhe-body { padding: 0 24px 60px; }
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-mobile-btn { display: block; }
+  #page-aula.visible { display: flex; flex-direction: column; }
+  .player-sidebar { max-height: 50vh; border-left: none; border-top: 1px solid var(--border); }
+  .hero-content { left: 24px; right: 24px; bottom: 40px; }
+  .content-section { padding: 0 16px; }
+  .perfil-info-row { padding: 0 20px; }
+  .perfil-body { padding: 0 20px 60px; }
+  .perfil-form-grid { grid-template-columns: 1fr; }
+  .padded-page { padding: 24px 16px 60px; }
+}
+@media (max-width: 480px) {
+  .hero { height: 60vh; min-height: 400px; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .btn-hero { width: 100%; justify-content: center; }
+  .cw-card { flex: 0 0 260px; }
+  .course-card { flex: 0 0 180px; }
+}
+
+/* cover colors for variety */
+.cover-neuro { background: linear-gradient(145deg, #061a06 0%, #0d2a0d 50%, #071a07 100%); }
+.cover-neuro-2 { background: linear-gradient(145deg, #0a1a06 0%, #152a08 100%); }
+.cover-ped { background: linear-gradient(145deg, #061020 0%, #0d1f3a 100%); }
+.cover-orto { background: linear-gradient(145deg, #1a0f06 0%, #2a1a08 100%); }
+.cover-ia { background: linear-gradient(145deg, #12061a 0%, #1f0d2a 100%); }
+</style>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">🦾</div>
+      <div class="login-logo-text">
+        Escola de Tecnologias Assistidas
+        <span>Área de Membros</span>
+      </div>
+    </div>
+    <div class="login-card">
+      <div class="login-title">Bem-vindo de volta</div>
+      <div class="login-sub">Acesse sua conta para continuar aprendendo</div>
+      <div class="form-group">
+        <label class="form-label">E-mail</label>
+        <input id="login-email" type="email" class="form-input" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input id="login-pass" type="password" class="form-input" placeholder="••••••••">
+      </div>
+      <div id="login-error" style="display:none;color:#f87171;font-size:13px;margin-bottom:8px;"></div>
+      <button class="btn-primary login-btn" onclick="doLogin()">▶ Entrar na plataforma</button>
+      <div class="login-footer">
+        Não tem acesso? <a href="#">Adquira um curso</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP SCREEN ══ -->
+<div id="screen-app" class="screen">
+
+  <!-- TOP NAV -->
+  <nav class="topnav" id="topnav">
+    <div class="nav-brand">
+      <div class="nav-brand-icon">🦾</div>
+      <div class="nav-brand-name">ETA</div>
+    </div>
+    <div class="nav-links">
+      <button class="nav-link-btn active" id="nav-inicio" onclick="goPage('home')">Início</button>
+      <button class="nav-link-btn" id="nav-cursos" onclick="goPage('cursos')">Meus Cursos</button>
+      <button class="nav-link-btn" id="nav-materiais" onclick="goPage('materiais')">Materiais</button>
+      <button class="nav-link-btn" id="nav-certificados" onclick="goPage('certificados')">Certificados</button>
+    </div>
+    <div class="nav-right">
+      <button class="nav-search-btn">🔍</button>
+      <div class="nav-avatar" id="nav-avatar" onclick="goPage('perfil')" title="Meu Perfil">G</div>
+    </div>
+    <button class="nav-mobile-btn" onclick="toggleMobileMenu()">☰</button>
+  </nav>
+
+  <div class="app-content">
+
+    <!-- ── PAGE HOME ── -->
+    <div id="page-home" class="page visible">
+
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-cover-img" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22500%22><defs><radialGradient id=%22r%22 cx=%2260%25%22 cy=%2240%25%22><stop offset=%220%25%22 stop-color=%22%233DB54A%22 stop-opacity=%22.3%22/><stop offset=%22100%25%22 stop-color=%22%230a0d0a%22/></radialGradient></defs><rect fill=%22url(%23r)%22 width=%22800%22 height=%22500%22/></svg>')"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-overlay-bottom"></div>
+        <div class="hero-content">
+          <div class="hero-badge">🔥 Continue de onde parou</div>
+          <div class="hero-title">AFO Neurológica<br>na Prática</div>
+          <div class="hero-desc">Domínio completo na órtese tornozelo-pé para reabilitação neurológica. Do diagnóstico à prescrição com precisão clínica.</div>
+          <div class="hero-meta">
+            <span>4 módulos</span>
+            <div class="hero-meta-dot"></div>
+            <span>20 aulas</span>
+            <div class="hero-meta-dot"></div>
+            <span>Certificado incluso</span>
+          </div>
+          <div class="hero-actions">
+            <button class="btn-hero btn-hero-primary" onclick="goAula()">▶ Continuar — Módulo 2, Aula 3</button>
+            <button class="btn-hero btn-hero-secondary" onclick="goDetalhe('afo-neurologica')">ⓘ Detalhes do curso</button>
+          </div>
+          <div class="hero-progress-info">
+            <span>35% concluído</span>
+            <div class="hero-progress-track">
+              <div class="hero-progress-fill" style="width:35%"></div>
+            </div>
+            <span>7 de 20 aulas</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTINUE WATCHING -->
+      <section class="content-section" style="margin-top:16px">
+        <div class="row-header">
+          <div class="row-title">Continuar assistindo</div>
+        </div>
+        <div class="card-row-scroll">
+          <div class="cw-card" onclick="goAula()">
+            <div class="cw-thumb">
+              <div class="cw-cover-art cover-neuro">🧠</div>
+              <div class="cw-overlay"></div>
+              <div class="cw-time-badge">12:34</div>
+            </div>
+            <div class="cw-progress-bar" style="width:35%"></div>
+            <div class="cw-body">
+              <div class="cw-lesson">AFO Neurológica · Módulo 2</div>
+              <div class="cw-title">Avaliação biomecânica do tornozelo em pacientes com espasticidade</div>
+            </div>
+          </div>
+          <div class="cw-card">
+            <div class="cw-thumb">
+              <div class="cw-cover-art cover-ped">👶</div>
+              <div class="cw-overlay"></div>
+              <div class="cw-time-badge">08:12</div>
+            </div>
+            <div class="cw-progress-bar" style="width:60%"></div>
+            <div class="cw-body">
+              <div class="cw-lesson">AFO Pediátrica · Módulo 1</div>
+              <div class="cw-title">Crescimento ósseo e adaptação da órtese na infância</div>
+            </div>
+          </div>
+          <div class="cw-card">
+            <div class="cw-thumb">
+              <div class="cw-cover-art cover-ia">🤖</div>
+              <div class="cw-overlay"></div>
+              <div class="cw-time-badge">22:05</div>
+            </div>
+            <div class="cw-progress-bar" style="width:15%"></div>
+            <div class="cw-body">
+              <div class="cw-lesson">IA Clínica · Módulo 1</div>
+              <div class="cw-title">Introdução aos modelos preditivos para diagnóstico assistivo</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEUS CURSOS -->
+      <section class="content-section">
+        <div class="row-header">
+          <div class="row-title">Meus cursos</div>
+          <button class="row-see-all" onclick="goPage('cursos')">Ver todos →</button>
+        </div>
+        <div class="card-row-scroll">
+
+          <div class="course-card" onclick="goDetalhe('afo-neurologica')">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-neuro">🧠</div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Neurologia</div>
+              <div class="course-card-name">AFO Neurológica na Prática</div>
+              <div class="course-card-meta">4 módulos · 20 aulas</div>
+              <div class="course-card-progress">
+                <div class="progress-track"><div class="progress-fill" style="width:35%"></div></div>
+                <div class="progress-label">35% — 7 de 20 aulas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card" onclick="goDetalhe('afo-pediatrica')">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-ped">👶</div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Pediátrica</div>
+              <div class="course-card-name">AFO Pediátrica: Crescimento e Adaptação</div>
+              <div class="course-card-meta">3 módulos · 15 aulas</div>
+              <div class="course-card-progress">
+                <div class="progress-track"><div class="progress-fill" style="width:60%"></div></div>
+                <div class="progress-label">60% — 9 de 15 aulas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-ia">🤖</div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+              <div class="course-card-locked">🔒 Bloqueado</div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Tecnologia</div>
+              <div class="course-card-name">IA Clínica para Fisioterapeutas</div>
+              <div class="course-card-meta">5 módulos · 24 aulas</div>
+              <div class="course-card-progress">
+                <div class="progress-label" style="color:var(--fg-dim)">🔒 Adquira o acesso</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-orto">🦿</div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+              <div class="course-card-locked">🔒 Bloqueado</div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Órteses</div>
+              <div class="course-card-name">Prescrição Avançada de Órteses KAFO</div>
+              <div class="course-card-meta">6 módulos · 28 aulas</div>
+              <div class="course-card-progress">
+                <div class="progress-label" style="color:var(--fg-dim)">🔒 Adquira o acesso</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CURSOS RECOMENDADOS -->
+      <section class="content-section">
+        <div class="row-header">
+          <div class="row-title">Recomendados para você</div>
+        </div>
+        <div class="card-row-scroll">
+          <div class="course-card">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-orto">🦿</div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+              <div class="course-card-locked">🔒</div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Órteses</div>
+              <div class="course-card-name">Prescrição Avançada de Órteses KAFO</div>
+              <div class="course-card-meta">6 módulos · 28 aulas</div>
+              <div class="course-card-progress"><div class="progress-label" style="color:var(--verde)">↗ Próximo passo recomendado</div></div>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-ia">🤖</div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Tecnologia</div>
+              <div class="course-card-name">IA Clínica para Fisioterapeutas</div>
+              <div class="course-card-meta">5 módulos · 24 aulas</div>
+              <div class="course-card-progress"><div class="progress-label" style="color:var(--fg-dim)">Baseado no seu progresso</div></div>
+            </div>
+          </div>
+          <div class="course-card">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-neuro-2">🧬</div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Neurologia</div>
+              <div class="course-card-name">Espasticidade e Órteses: Protocolo Clínico</div>
+              <div class="course-card-meta">4 módulos · 18 aulas</div>
+              <div class="course-card-progress"><div class="progress-label" style="color:var(--fg-dim)">Complementar ao seu curso</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ── PAGE CURSOS ── -->
+    <div id="page-cursos" class="page padded-page">
+      <div class="page-header">
+        <div class="page-title">Meus Cursos</div>
+        <div class="page-sub">Seus cursos ativos e disponíveis</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">
+
+        <div class="course-card" onclick="goDetalhe('afo-neurologica')" style="flex:none">
+          <div class="course-card-thumb">
+            <div class="course-cover course-cover-gradient cover-neuro">🧠</div>
+            <div class="course-cover-overlay"></div>
+            <div class="course-card-play"><div class="play-circle">▶</div></div>
+          </div>
+          <div class="course-card-body">
+            <div class="course-card-tag">Neurologia</div>
+            <div class="course-card-name">AFO Neurológica na Prática</div>
+            <div class="course-card-meta">4 módulos · 20 aulas · 8h de conteúdo</div>
+            <div class="course-card-progress">
+              <div class="progress-track"><div class="progress-fill" style="width:35%"></div></div>
+              <div class="progress-label">35% — 7 de 20 aulas</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="course-card" onclick="goDetalhe('afo-pediatrica')" style="flex:none">
+          <div class="course-card-thumb">
+            <div class="course-cover course-cover-gradient cover-ped">👶</div>
+            <div class="course-cover-overlay"></div>
+            <div class="course-card-play"><div class="play-circle">▶</div></div>
+          </div>
+          <div class="course-card-body">
+            <div class="course-card-tag">Pediátrica</div>
+            <div class="course-card-name">AFO Pediátrica: Crescimento e Adaptação</div>
+            <div class="course-card-meta">3 módulos · 15 aulas · 6h de conteúdo</div>
+            <div class="course-card-progress">
+              <div class="progress-track"><div class="progress-fill" style="width:60%"></div></div>
+              <div class="progress-label">60% — 9 de 15 aulas</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="course-card" style="flex:none;opacity:.5">
+          <div class="course-card-thumb">
+            <div class="course-cover course-cover-gradient cover-ia">🤖</div>
+            <div class="course-cover-overlay"></div>
+            <div class="course-card-locked">🔒 Bloqueado</div>
+          </div>
+          <div class="course-card-body">
+            <div class="course-card-tag">Tecnologia</div>
+            <div class="course-card-name">IA Clínica para Fisioterapeutas</div>
+            <div class="course-card-meta">5 módulos · 24 aulas · 10h de conteúdo</div>
+            <div class="course-card-progress"><div class="progress-label" style="color:var(--fg-dim)">🔒 Não adquirido</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── PAGE DETALHE ── -->
+    <div id="page-detalhe" class="page">
+
+      <!-- hero -->
+      <section class="detalhe-hero">
+        <div class="detalhe-hero-bg" id="detalhe-hero-bg"></div>
+        <div class="detalhe-hero-overlay"></div>
+        <div class="detalhe-hero-overlay-bottom"></div>
+        <div class="detalhe-cover-preview" id="detalhe-cover-preview">🧠</div>
+        <div class="detalhe-content">
+          <div class="detalhe-category" id="detalhe-category">Neurologia</div>
+          <div class="detalhe-title" id="detalhe-title">AFO Neurológica na Prática</div>
+          <div class="detalhe-meta">
+            <div class="detalhe-rating">⭐ <span>4.9</span></div>
+            <span id="detalhe-meta-lessons">4 módulos · 20 aulas</span>
+            <span id="detalhe-meta-duration">8h de conteúdo</span>
+            <span id="detalhe-meta-students">1.2k alunos</span>
+          </div>
+          <div class="detalhe-actions">
+            <button class="btn-detalhe-play" onclick="goAula()">▶ Continuar — M2, A3</button>
+            <button class="btn-detalhe-info">↓ Ir para currículo</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- body -->
+      <div class="detalhe-body">
+        <div class="detalhe-columns">
+          <!-- left -->
+          <div>
+            <div class="detalhe-desc-label">Sobre o curso</div>
+            <div class="detalhe-desc">
+              Treinamento intensivo sobre o uso clínico da órtese tornozelo-pé (AFO) no contexto neurológico. Do entendimento biomecânico à prescrição individualizada, com protocolos validados e casos reais de pacientes com AVC, paralisia cerebral e lesão medular.
+            </div>
+
+            <div class="detalhe-desc-label">O que você vai dominar</div>
+            <div class="detalhe-outcomes" style="margin-bottom:32px">
+              <div class="outcome-item"><span class="outcome-check">✓</span>Avaliação biomecânica do tornozelo e determinação do tipo de AFO ideal</div>
+              <div class="outcome-item"><span class="outcome-check">✓</span>Protocolos de prescrição para espasticidade, drop foot e instabilidade lateral</div>
+              <div class="outcome-item"><span class="outcome-check">✓</span>Ajuste e follow-up clínico da órtese após adaptação do paciente</div>
+              <div class="outcome-item"><span class="outcome-check">✓</span>Comunicação técnica com ortotistas e justificativa clínica documentada</div>
+              <div class="outcome-item"><span class="outcome-check">✓</span>Gestão do fornecimento: como integrar a prescrição ao modelo de negócio clínico</div>
+            </div>
+
+            <div class="curriculum-title">Currículo do curso</div>
+
+            <div class="module-accordion open">
+              <div class="module-header" onclick="toggleModule(this)">
+                <div class="module-header-left">
+                  <div class="module-num">1</div>
+                  <div>
+                    <div class="module-name">Fundamentos Clínicos da AFO</div>
+                    <div class="module-info">5 aulas · 2h 10min · Concluído ✓</div>
+                  </div>
+                </div>
+                <div class="module-chevron">▼</div>
+              </div>
+              <div class="module-lessons">
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">1</div><div class="lesson-check-icon done">✓</div><div class="lesson-row-title">Anatomia funcional do tornozelo e pé</div><div class="lesson-row-free">Preview</div><div class="lesson-row-dur">28min</div></div>
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">2</div><div class="lesson-check-icon done">✓</div><div class="lesson-row-title">Tipos de AFO e indicações clínicas</div><div class="lesson-row-dur">22min</div></div>
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">3</div><div class="lesson-check-icon done">✓</div><div class="lesson-row-title">Materiais e propriedades mecânicas</div><div class="lesson-row-dur">19min</div></div>
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">4</div><div class="lesson-check-icon done">✓</div><div class="lesson-row-title">Avaliação pré-prescrição: protocolo de 7 etapas</div><div class="lesson-row-dur">31min</div></div>
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">5</div><div class="lesson-check-icon done">✓</div><div class="lesson-row-title">Documentação e justificativa clínica</div><div class="lesson-row-dur">25min</div></div>
+              </div>
+            </div>
+
+            <div class="module-accordion open">
+              <div class="module-header" onclick="toggleModule(this)">
+                <div class="module-header-left">
+                  <div class="module-num">2</div>
+                  <div>
+                    <div class="module-name">Espasticidade e Paralisia Cerebral</div>
+                    <div class="module-info">5 aulas · 2h 20min · Em andamento</div>
+                  </div>
+                </div>
+                <div class="module-chevron">▼</div>
+              </div>
+              <div class="module-lessons">
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">6</div><div class="lesson-check-icon done">✓</div><div class="lesson-row-title">Fisiopatologia da espasticidade</div><div class="lesson-row-dur">24min</div></div>
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">7</div><div class="lesson-check-icon done">✓</div><div class="lesson-row-title">AFO dinâmica vs rígida na criança com PC</div><div class="lesson-row-dur">27min</div></div>
+                <div class="lesson-row" onclick="goAula()"><div class="lesson-num">8</div><div class="lesson-check-icon current">▶</div><div class="lesson-row-title" style="color:var(--fg)">Avaliação biomecânica do tornozelo em pacientes com espasticidade</div><div class="lesson-row-dur">32min</div></div>
+                <div class="lesson-row"><div class="lesson-num">9</div><div class="lesson-check-icon"></div><div class="lesson-row-title">Ajuste da AFO após botulinum toxin</div><div class="lesson-row-dur">29min</div></div>
+                <div class="lesson-row"><div class="lesson-num">10</div><div class="lesson-check-icon"></div><div class="lesson-row-title">Estudo de caso: criança de 8 anos com diplegia</div><div class="lesson-row-dur">35min</div></div>
+              </div>
+            </div>
+
+            <div class="module-accordion">
+              <div class="module-header" onclick="toggleModule(this)">
+                <div class="module-header-left">
+                  <div class="module-num">3</div>
+                  <div>
+                    <div class="module-name">AVC e Lesão Medular</div>
+                    <div class="module-info">5 aulas · 2h 05min · Não iniciado</div>
+                  </div>
+                </div>
+                <div class="module-chevron">▼</div>
+              </div>
+              <div class="module-lessons">
+                <div class="lesson-row"><div class="lesson-num">11</div><div class="lesson-check-icon"></div><div class="lesson-row-title">Drop foot pós-AVC: avaliação e prescrição</div><div class="lesson-row-dur">30min</div></div>
+                <div class="lesson-row"><div class="lesson-num">12</div><div class="lesson-check-icon"></div><div class="lesson-row-title">AFO com travamento para instabilidade grave</div><div class="lesson-row-dur">28min</div></div>
+                <div class="lesson-row"><div class="lesson-num">13</div><div class="lesson-check-icon"></div><div class="lesson-row-title">Monitoramento da marcha com sensor</div><div class="lesson-row-dur">22min</div></div>
+                <div class="lesson-row"><div class="lesson-num">14</div><div class="lesson-check-icon"></div><div class="lesson-row-title">Reabilitação pós-lesão medular incompleta</div><div class="lesson-row-dur">26min</div></div>
+                <div class="lesson-row"><div class="lesson-num">15</div><div class="lesson-check-icon"></div><div class="lesson-row-title">Estudo de caso: AVC isquêmico 6 meses</div><div class="lesson-row-dur">33min</div></div>
+              </div>
+            </div>
+
+            <div class="module-accordion" style="opacity:.5">
+              <div class="module-header">
+                <div class="module-header-left">
+                  <div class="module-num" style="border-color:var(--border);color:var(--fg-dim);background:var(--bg-card2)">🔒</div>
+                  <div>
+                    <div class="module-name">Gestão Clínica e Negócio</div>
+                    <div class="module-info">5 aulas · 2h 15min · Conclua os anteriores</div>
+                  </div>
+                </div>
+                <div class="module-chevron" style="color:var(--fg-dim)">▼</div>
+              </div>
+            </div>
+
+            <!-- instructor -->
+            <div class="instructor-card" style="margin-top:32px">
+              <div class="detalhe-desc-label">Instrutor</div>
+              <div class="instructor-header">
+                <div class="instructor-avatar">L</div>
+                <div>
+                  <div class="instructor-name">Leonardo Jácome</div>
+                  <div class="instructor-role">Especialista em Tecnologias Assistivas · Ortotista-Protesista</div>
+                </div>
+              </div>
+              <div class="instructor-bio">
+                Ortotista-Protesista com mais de 15 anos de atuação em reabilitação neurológica. Fundador da Escola de Tecnologias Assistidas, formou mais de 800 fisioterapeutas em todo o Brasil. Especialista em prescrição de AFO para adultos e crianças com condições neurológicas complexas.
+              </div>
+            </div>
+          </div>
+
+          <!-- right sidebar -->
+          <div class="detalhe-sidebar">
+            <div class="info-card">
+              <div class="info-card-header">🧠</div>
+              <div class="info-card-body">
+                <div class="info-row">
+                  <div class="info-row-icon">📹</div>
+                  <div class="info-row-label">Aulas em vídeo</div>
+                  <div class="info-row-value">20 aulas</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-row-icon">⏱</div>
+                  <div class="info-row-label">Carga horária</div>
+                  <div class="info-row-value">8h 50min</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-row-icon">📄</div>
+                  <div class="info-row-label">Materiais</div>
+                  <div class="info-row-value">12 PDFs</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-row-icon">🏆</div>
+                  <div class="info-row-label">Certificado</div>
+                  <div class="info-row-value">Incluso</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-row-icon">♾</div>
+                  <div class="info-row-label">Acesso</div>
+                  <div class="info-row-value">Vitalício</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-row-icon">📱</div>
+                  <div class="info-row-label">Plataformas</div>
+                  <div class="info-row-value">Web e mobile</div>
+                </div>
+                <button class="btn-enroll" onclick="goAula()">▶ Continuar curso</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE AULA ── -->
+    <div id="page-aula" class="page">
+      <div class="player-main">
+        <div class="player-wrap">
+          <div class="player-mockup">
+            <button class="player-play-btn">▶</button>
+            <div class="player-label">Avaliação biomecânica do tornozelo em pacientes com espasticidade</div>
+          </div>
+          <div class="player-controls">
+            <button class="player-ctrl-btn">◀◀</button>
+            <div class="player-timeline">
+              <div class="player-progress"></div>
+            </div>
+            <div class="player-time">12:34 / 32:00</div>
+            <button class="player-ctrl-btn">▶▶</button>
+            <button class="player-ctrl-btn">⚙</button>
+            <button class="player-ctrl-btn">⤡</button>
+          </div>
+        </div>
+
+        <div class="player-info">
+          <div class="player-course-name">AFO Neurológica na Prática · Módulo 2</div>
+          <div class="player-lesson-title">Avaliação biomecânica do tornozelo em pacientes com espasticidade</div>
+          <div class="player-lesson-meta">Aula 8 de 20 · 32 min</div>
+        </div>
+
+        <div class="player-nav-btns">
+          <button class="btn-nav">◀ Aula anterior</button>
+          <button class="btn-nav btn-nav-next">Próxima aula ▶</button>
+        </div>
+
+        <div class="player-tabs" style="margin-top:24px">
+          <button class="player-tab active" onclick="switchTab(this,'tab-materiais')">📄 Materiais</button>
+          <button class="player-tab" onclick="switchTab(this,'tab-notas')">📝 Notas</button>
+          <button class="player-tab" onclick="switchTab(this,'tab-sobre')">ⓘ Sobre</button>
+        </div>
+
+        <div id="tab-materiais">
+          <div class="player-materials-list">
+            <div class="material-item">
+              <div class="material-icon">📋</div>
+              <div class="material-name">Protocolo de Avaliação Biomecânica</div>
+              <div class="material-size">PDF · 2.4 MB</div>
+              <div>↓</div>
+            </div>
+            <div class="material-item">
+              <div class="material-icon">📊</div>
+              <div class="material-name">Tabela de Referência — Escalas de Espasticidade</div>
+              <div class="material-size">PDF · 1.1 MB</div>
+              <div>↓</div>
+            </div>
+            <div class="material-item">
+              <div class="material-icon">🖼</div>
+              <div class="material-name">Slides da Aula</div>
+              <div class="material-size">PDF · 8.2 MB</div>
+              <div>↓</div>
+            </div>
+          </div>
+        </div>
+        <div id="tab-notas" style="display:none">
+          <textarea style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;color:var(--fg);font-family:var(--font-b);font-size:14px;resize:vertical;min-height:120px;outline:none" placeholder="Suas anotações sobre esta aula..."></textarea>
+        </div>
+        <div id="tab-sobre" style="display:none;font-size:14px;color:var(--fg-muted);line-height:1.7">
+          Nesta aula, você aprenderá a conduzir uma avaliação biomecânica completa do tornozelo em pacientes com espasticidade. Cobrimos os principais achados clínicos que determinam o tipo ideal de AFO, o protocolo de medição e os critérios para indicação de AFO dinâmica vs rígida.
+        </div>
+      </div>
+
+      <!-- player sidebar -->
+      <div class="player-sidebar">
+        <div class="player-sidebar-header">
+          <div class="player-sidebar-title">AFO Neurológica na Prática</div>
+          <div class="player-sidebar-progress">35% concluído · 7/20 aulas</div>
+        </div>
+        <div class="sidebar-module-label">Módulo 1 — Fundamentos Clínicos</div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check done">✓</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Anatomia funcional do tornozelo</div><div class="sidebar-lesson-dur">28min</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check done">✓</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Tipos de AFO e indicações</div><div class="sidebar-lesson-dur">22min</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check done">✓</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Materiais e propriedades mecânicas</div><div class="sidebar-lesson-dur">19min</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check done">✓</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Avaliação pré-prescrição</div><div class="sidebar-lesson-dur">31min</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check done">✓</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Documentação clínica</div><div class="sidebar-lesson-dur">25min</div></div></div>
+        <div class="sidebar-module-label">Módulo 2 — Espasticidade e PC</div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check done">✓</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Fisiopatologia da espasticidade</div><div class="sidebar-lesson-dur">24min</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check done">✓</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">AFO dinâmica vs rígida</div><div class="sidebar-lesson-dur">27min</div></div></div>
+        <div class="sidebar-lesson active"><div class="sidebar-lesson-check current">▶</div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title" style="color:var(--verde)">Avaliação biomecânica com espasticidade</div><div class="sidebar-lesson-dur">32min · em andamento</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check"></div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Ajuste após botulinum toxin</div><div class="sidebar-lesson-dur">29min</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check"></div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Estudo de caso: criança 8 anos</div><div class="sidebar-lesson-dur">35min</div></div></div>
+        <div class="sidebar-module-label">Módulo 3 — AVC e Lesão Medular</div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check"></div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">Drop foot pós-AVC</div><div class="sidebar-lesson-dur">30min</div></div></div>
+        <div class="sidebar-lesson"><div class="sidebar-lesson-check"></div><div class="sidebar-lesson-info"><div class="sidebar-lesson-title">AFO com travamento</div><div class="sidebar-lesson-dur">28min</div></div></div>
+        <div class="sidebar-module-label" style="opacity:.5">Módulo 4 — Gestão Clínica 🔒</div>
+      </div>
+    </div>
+
+    <!-- ── PAGE MATERIAIS ── -->
+    <div id="page-materiais" class="page padded-page">
+      <div class="page-header">
+        <div class="page-title">Materiais</div>
+        <div class="page-sub">Protocolos, slides e referências dos seus cursos</div>
+      </div>
+      <div style="margin-bottom:20px;font-family:var(--font-d);font-size:18px;font-weight:700">AFO Neurológica na Prática</div>
+      <div class="mat-grid" style="margin-bottom:36px">
+        <div class="mat-card"><div class="mat-icon">📋</div><div class="mat-info"><div class="mat-name">Protocolo de Avaliação Biomecânica</div><div class="mat-meta">Módulo 2 · PDF · 2.4 MB</div></div><div class="mat-dl">↓</div></div>
+        <div class="mat-card"><div class="mat-icon">📊</div><div class="mat-info"><div class="mat-name">Escalas de Espasticidade — Tabela</div><div class="mat-meta">Módulo 2 · PDF · 1.1 MB</div></div><div class="mat-dl">↓</div></div>
+        <div class="mat-card"><div class="mat-icon">🖼</div><div class="mat-info"><div class="mat-name">Slides — Tipos de AFO e Indicações</div><div class="mat-meta">Módulo 1 · PDF · 8.2 MB</div></div><div class="mat-dl">↓</div></div>
+        <div class="mat-card"><div class="mat-icon">📋</div><div class="mat-info"><div class="mat-name">Checklist de Prescrição AFO</div><div class="mat-meta">Módulo 1 · PDF · 0.8 MB</div></div><div class="mat-dl">↓</div></div>
+        <div class="mat-card"><div class="mat-icon">📰</div><div class="mat-info"><div class="mat-name">Referências Bibliográficas</div><div class="mat-meta">Geral · PDF · 0.4 MB</div></div><div class="mat-dl">↓</div></div>
+        <div class="mat-card"><div class="mat-icon">🎥</div><div class="mat-info"><div class="mat-name">Vídeo-demonstração: ajuste de AFO</div><div class="mat-meta">Módulo 2 · MP4 · 180 MB</div></div><div class="mat-dl">↓</div></div>
+      </div>
+      <div style="margin-bottom:20px;font-family:var(--font-d);font-size:18px;font-weight:700">AFO Pediátrica</div>
+      <div class="mat-grid">
+        <div class="mat-card"><div class="mat-icon">📋</div><div class="mat-info"><div class="mat-name">Protocolo Pediátrico de Avaliação</div><div class="mat-meta">Módulo 1 · PDF · 1.9 MB</div></div><div class="mat-dl">↓</div></div>
+        <div class="mat-card"><div class="mat-icon">📏</div><div class="mat-info"><div class="mat-name">Tabela de Crescimento e Ajuste</div><div class="mat-meta">Geral · PDF · 0.6 MB</div></div><div class="mat-dl">↓</div></div>
+        <div class="mat-card"><div class="mat-icon">🖼</div><div class="mat-info"><div class="mat-name">Slides — Paralisia Cerebral e AFO</div><div class="mat-meta">Módulo 2 · PDF · 7.4 MB</div></div><div class="mat-dl">↓</div></div>
+      </div>
+    </div>
+
+    <!-- ── PAGE CERTIFICADOS ── -->
+    <div id="page-certificados" class="page padded-page">
+      <div class="page-header">
+        <div class="page-title">Certificados</div>
+        <div class="page-sub">Seus certificados de conclusão</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+
+        <div class="cert-card">
+          <div class="cert-preview">
+            <div class="cert-badge-overlay">
+              <div class="cert-logo-mini">Escola de Tecnologias Assistidas</div>
+              <div class="cert-line"></div>
+              <div class="cert-title-mini">AFO Pediátrica</div>
+              <div class="cert-line"></div>
+              <div class="cert-name-mini">Glebe Duarte</div>
+            </div>
+          </div>
+          <div class="cert-body">
+            <div class="cert-title">AFO Pediátrica: Crescimento e Adaptação</div>
+            <div class="cert-meta">Concluído em 15 out 2026 · 6h de conteúdo</div>
+            <div class="cert-actions">
+              <button class="btn-sm btn-sm-primary">↓ Baixar PDF</button>
+              <button class="btn-sm">🔗 Compartilhar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cert-locked-card">
+          <div class="cert-locked-preview">🔒</div>
+          <div class="cert-title" style="font-size:14px;font-weight:600;margin-bottom:4px">AFO Neurológica na Prática</div>
+          <div class="cert-meta">Complete o curso para desbloquear · 65% faltam</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── PAGE PERFIL ── -->
+    <div id="page-perfil" class="page">
+      <div class="perfil-hero">
+        <div class="perfil-hero-pattern"></div>
+      </div>
+      <div class="perfil-info-row">
+        <div class="perfil-avatar-lg" id="perfil-avatar-lg">G</div>
+        <div class="perfil-name-block">
+          <div class="perfil-name" id="perfil-name">Glebe Duarte</div>
+          <div class="perfil-email" id="perfil-email">glebe@eta.com.br</div>
+        </div>
+      </div>
+      <div class="perfil-body">
+        <div class="perfil-section">
+          <div class="perfil-section-title">Resumo de progresso</div>
+          <div class="perfil-stats-grid">
+            <div class="perfil-stat"><div class="perfil-stat-label">Cursos ativos</div><div class="perfil-stat-value">2</div><div class="perfil-stat-sub">↑ 1 novo este mês</div></div>
+            <div class="perfil-stat"><div class="perfil-stat-label">Aulas assistidas</div><div class="perfil-stat-value">16</div><div class="perfil-stat-sub">↑ 4 esta semana</div></div>
+            <div class="perfil-stat"><div class="perfil-stat-label">Certificados</div><div class="perfil-stat-value">1</div><div class="perfil-stat-sub">1 em andamento</div></div>
+            <div class="perfil-stat"><div class="perfil-stat-label">Horas assistidas</div><div class="perfil-stat-value">9h</div><div class="perfil-stat-sub">de 14h totais</div></div>
+          </div>
+        </div>
+
+        <div class="perfil-section">
+          <div class="perfil-section-title">Dados pessoais</div>
+          <div class="perfil-form-grid">
+            <div class="form-field"><label>Nome completo</label><input type="text" id="perfil-input-name" value="Glebe Duarte"></div>
+            <div class="form-field"><label>E-mail</label><input type="email" id="perfil-input-email" value="glebe@eta.com.br"></div>
+            <div class="form-field"><label>WhatsApp</label><input type="tel" placeholder="+55 (00) 00000-0000"></div>
+            <div class="form-field"><label>Área de atuação</label><input type="text" placeholder="Ex: Fisioterapia Neurológica"></div>
+            <div class="form-field"><label>Cidade</label><input type="text" placeholder="Sua cidade"></div>
+            <div class="form-field"><label>Estado</label><input type="text" placeholder="UF"></div>
+          </div>
+          <button class="btn-save" onclick="saveProfile()">Salvar alterações</button>
+        </div>
+
+        <div class="perfil-section">
+          <button class="perfil-signout" onclick="doLogout()">↗ Sair da conta</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-content -->
+</div><!-- /screen-app -->
+
+<script>
+// ── SUPABASE CONFIG ──
+// Substitua os valores abaixo pelos do seu projeto:
+// Supabase > Project Settings > API
+const SUPABASE_URL = 'https://gayfopqjkfpnkekcwfdx.supabase.co';
+const SUPABASE_ANON_KEY = 'SUBSTITUA_PELA_ANON_KEY_DO_PROJETO';
+
+let _sb = null;
+function sb() {
+  if (!_sb && window.supabase) {
+    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _sb;
+}
+
+// ── STATE ──
+let currentUser = { name: 'Aluno', email: 'aluno@eta.com.br', initials: 'A' };
+let currentPage = 'home';
+
+// ── HELPERS ──
+function setLoginError(msg) {
+  const el = document.getElementById('login-error');
+  if (el) { el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
+}
+function setLoginLoading(loading) {
+  const btn = document.querySelector('.login-btn');
+  if (btn) btn.textContent = loading ? 'Entrando…' : 'Entrar';
+}
+function applyUser(name, email) {
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  currentUser = { name, email, initials };
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('perfil-avatar-lg').textContent = initials;
+  document.getElementById('perfil-name').textContent = name;
+  document.getElementById('perfil-email').textContent = email;
+  document.getElementById('perfil-input-name').value = name;
+  document.getElementById('perfil-input-email').value = email;
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  goPage('home');
+}
+
+// ── LOGIN ──
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  if (!email || !pass) { setLoginError('Preencha e-mail e senha.'); return; }
+
+  setLoginError('');
+  setLoginLoading(true);
+
+  // Tenta autenticação real via Supabase
+  try {
+    const client = sb();
+    if (client) {
+      const { data, error } = await client.auth.signInWithPassword({ email, password: pass });
+      setLoginLoading(false);
+      if (error) {
+        // Fallback demo se a chave ainda não foi configurada
+        if (SUPABASE_ANON_KEY === 'SUBSTITUA_PELA_ANON_KEY_DO_PROJETO') {
+          _demoLogin(email);
+        } else {
+          setLoginError(error.message === 'Invalid login credentials'
+            ? 'E-mail ou senha inválidos.'
+            : error.message);
+        }
+        return;
+      }
+      const profile = data.user;
+      const name = profile.user_metadata?.full_name
+        || email.split('@')[0].replace(/[.\-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      applyUser(name, email);
+    } else {
+      _demoLogin(email);
+    }
+  } catch {
+    setLoginLoading(false);
+    _demoLogin(email);
+  }
+}
+
+function _demoLogin(email) {
+  const name = email.split('@')[0].replace(/[.\-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  applyUser(name, email);
+}
+
+async function doLogout() {
+  try { if (sb()) await sb().auth.signOut(); } catch {}
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+}
+
+// Verifica sessão ativa ao carregar
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const client = sb();
+    if (client && SUPABASE_ANON_KEY !== 'SUBSTITUA_PELA_ANON_KEY_DO_PROJETO') {
+      const { data } = await client.auth.getSession();
+      if (data?.session?.user) {
+        const u = data.session.user;
+        const name = u.user_metadata?.full_name
+          || u.email.split('@')[0].replace(/[.\-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        applyUser(name, u.email);
+      }
+    }
+  } catch {}
+});
+
+// Salva perfil no Supabase
+async function saveProfile() {
+  const name  = document.getElementById('perfil-input-name').value.trim();
+  const email = document.getElementById('perfil-input-email').value.trim();
+  try {
+    const client = sb();
+    if (client && SUPABASE_ANON_KEY !== 'SUBSTITUA_PELA_ANON_KEY_DO_PROJETO') {
+      await client.from('profiles').update({ full_name: name }).eq('email', email);
+    }
+    applyUser(name, email);
+    alert('Perfil salvo!');
+  } catch { alert('Perfil salvo localmente.'); }
+}
+
+// Salva progresso de aula no Supabase
+async function saveProgress(lessonId, completed = true) {
+  try {
+    const client = sb();
+    if (!client || SUPABASE_ANON_KEY === 'SUBSTITUA_PELA_ANON_KEY_DO_PROJETO') return;
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) return;
+    await client.from('progress').upsert(
+      { user_id: user.id, lesson_id: lessonId, completed, watched_pct: completed ? 100 : 50 },
+      { onConflict: 'user_id,lesson_id' }
+    );
+  } catch {}
+}
+
+// Enter key on login
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ── NAVIGATION ──
+const PAGES = { home: 'page-home', cursos: 'page-cursos', detalhe: 'page-detalhe', aula: 'page-aula', materiais: 'page-materiais', certificados: 'page-certificados', perfil: 'page-perfil' };
+const NAV_MAP = { home:'nav-inicio', cursos:'nav-cursos', materiais:'nav-materiais', certificados:'nav-certificados' };
+
+function goPage(page) {
+  // hide all
+  Object.values(PAGES).forEach(id => {
+    const el = document.getElementById(id);
+    if(el) { el.classList.remove('visible'); }
+  });
+  // deactivate nav
+  document.querySelectorAll('.nav-link-btn').forEach(b => b.classList.remove('active'));
+  // show target
+  const target = document.getElementById(PAGES[page]);
+  if(target) target.classList.add('visible');
+  if(NAV_MAP[page]) {
+    const btn = document.getElementById(NAV_MAP[page]);
+    if(btn) btn.classList.add('active');
+  }
+  currentPage = page;
+  // scroll top
+  document.querySelector('.app-content').scrollTo(0, 0);
+  window.scrollTo(0,0);
+}
+
+function goAula() { goPage('aula'); }
+
+// ── DETALHE ──
+const CURSOS = {
+  'afo-neurologica': {
+    title: 'AFO Neurológica na Prática',
+    category: 'Neurologia',
+    icon: '🧠',
+    lessons: '4 módulos · 20 aulas',
+    duration: '8h de conteúdo',
+    students: '1.2k alunos',
+    color: 'cover-neuro'
+  },
+  'afo-pediatrica': {
+    title: 'AFO Pediátrica: Crescimento e Adaptação',
+    category: 'Pediátrica',
+    icon: '👶',
+    lessons: '3 módulos · 15 aulas',
+    duration: '6h de conteúdo',
+    students: '800 alunos',
+    color: 'cover-ped'
+  }
+};
+
+function goDetalhe(id) {
+  const c = CURSOS[id];
+  if(!c) return;
+  document.getElementById('detalhe-title').textContent = c.title;
+  document.getElementById('detalhe-category').textContent = c.category;
+  const cover = document.getElementById('detalhe-cover-preview');
+  cover.textContent = c.icon;
+  cover.className = 'detalhe-cover-preview ' + c.color;
+  document.getElementById('detalhe-meta-lessons').textContent = c.lessons;
+  document.getElementById('detalhe-meta-duration').textContent = c.duration;
+  document.getElementById('detalhe-meta-students').textContent = c.students;
+  goPage('detalhe');
+}
+
+// ── MODULE ACCORDION ──
+function toggleModule(header) {
+  const acc = header.closest('.module-accordion');
+  acc.classList.toggle('open');
+}
+
+// ── PLAYER TABS ──
+const TABS = { 'tab-materiais': true, 'tab-notas': true, 'tab-sobre': true };
+function switchTab(btn, tabId) {
+  document.querySelectorAll('.player-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  Object.keys(TABS).forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = id === tabId ? '' : 'none';
+  });
+}
+
+// ── TOPNAV SCROLL EFFECT ──
+function handleScroll() {
+  const nav = document.getElementById('topnav');
+  const content = document.querySelector('.app-content');
+  const scrollY = content ? content.scrollTop : window.scrollY;
+  if(scrollY > 10) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const content = document.querySelector('.app-content');
+  if(content) content.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll);
+});
+
+function toggleMobileMenu() {
+  const links = document.querySelector('.nav-links');
+  if(links) {
+    links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+    links.style.position = 'fixed';
+    links.style.top = '64px';
+    links.style.left = '0'; links.style.right = '0';
+    links.style.background = 'rgba(10,13,10,.98)';
+    links.style.flexDirection = 'column';
+    links.style.padding = '12px';
+    links.style.borderBottom = '1px solid var(--border)';
+    links.style.zIndex = '99';
+  }
+}
+</script>
