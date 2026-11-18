@@ -1099,7 +1099,7 @@ img { display: block; max-width: 100%; }
 /* cover colors for variety */
 .cover-neuro { background: #061a06 url('assets/afo-neurologica-cover.jpg') center/cover no-repeat; }
 .cover-neuro-2 { background: linear-gradient(145deg, #0a1a06 0%, #152a08 100%); }
-.cover-ped { background: linear-gradient(145deg, #061020 0%, #0d1f3a 100%); }
+.cover-ped { background: #0f1408 url('assets/afo-pediatrica-cover.jpg') center/cover no-repeat; }
 .cover-orto { background: linear-gradient(145deg, #1a0f06 0%, #2a1a08 100%); }
 .cover-ia { background: linear-gradient(145deg, #12061a 0%, #1f0d2a 100%); }
 </style>
@@ -1979,7 +1979,8 @@ const CURSOS = {
     lessons: '4 módulos · 20 aulas',
     duration: '8h de conteúdo',
     students: '1.2k alunos',
-    color: 'cover-neuro'
+    color: 'cover-neuro',
+    bg: 'assets/bg-neural.jpg'
   },
   'afo-pediatrica': {
     title: 'AFO Pediátrica: Crescimento e Adaptação',
@@ -1988,7 +1989,8 @@ const CURSOS = {
     lessons: '3 módulos · 15 aulas',
     duration: '6h de conteúdo',
     students: '800 alunos',
-    color: 'cover-ped'
+    color: 'cover-ped',
+    bg: 'assets/bg-pediatrica.jpg'
   }
 };
 
@@ -2000,6 +2002,7 @@ function goDetalhe(id) {
   const cover = document.getElementById('detalhe-cover-preview');
   cover.textContent = '';
   cover.className = 'detalhe-cover-preview ' + c.color;
+  document.getElementById('detalhe-hero-bg').style.backgroundImage = "url('" + (c.bg || 'assets/bg-neural.jpg') + "')";
   document.getElementById('detalhe-meta-lessons').textContent = c.lessons;
   document.getElementById('detalhe-meta-duration').textContent = c.duration;
   document.getElementById('detalhe-meta-students').textContent = c.students;
