@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Plano de Marketing · Escola de Tecnologias Assistidas</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/eta.css">
+<style>
+.toc { display: flex; gap: 6px; overflow-x: auto; padding: 10px var(--gutter); border-bottom: 1px solid var(--border); position: sticky; top: 64px; z-index: 40; background: rgba(10,13,10,.92); backdrop-filter: blur(12px); }
+.toc a { white-space: nowrap; font-size: 13px; color: var(--fg-muted); padding: 6px 10px; border-radius: 6px; }
+.toc a:hover { color: var(--fg); background: rgba(255,255,255,.05); }
+.sec { padding: 64px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 120px; }
+.num { font: 900 13px var(--font-d); color: var(--verde); letter-spacing: 2px; margin-bottom: 10px; }
+.two { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 32px; }
+.box { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+.box h3 { font: 700 20px var(--font-d); margin-bottom: 8px; }
+.box p, .box li { color: #c9d2c9; line-height: 1.65; font-size: 15px; }
+.box ul { padding-left: 18px; display: grid; gap: 6px; }
+.quote { font: 800 clamp(28px,4vw,44px)/1.1 var(--font-d); border-left: 4px solid var(--verde); padding-left: 20px; margin: 28px 0; }
+
+/* escada */
+.ladder { display: grid; gap: 10px; }
+.step { display: grid; grid-template-columns: 120px minmax(0,1fr) minmax(0,1.2fr); gap: 18px; align-items: center; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-2); position: relative; }
+.step.new { border-color: rgba(61,181,74,.5); background: linear-gradient(90deg, rgba(61,181,74,.1), var(--bg-2) 60%); }
+.step .p { font: 900 26px/1 var(--font-d); }
+.step .p small { display: block; font: 500 11px var(--font-b); color: var(--fg-muted); margin-top: 4px; letter-spacing: .5px; text-transform: uppercase; }
+.step b { font: 700 19px var(--font-d); display: block; }
+.step .f { font-size: 13px; color: var(--fg-muted); }
+.step .r { font-size: 14px; color: #c9d2c9; line-height: 1.5; }
+.pill { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; background: var(--verde); color: #000; border-radius: 4px; padding: 2px 6px; margin-left: 6px; vertical-align: middle; }
+
+/* funil */
+.funnel { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 8px; }
+.fstep { background: var(--bg-2); border: 1px solid var(--border); border-top: 3px solid var(--verde); border-radius: 10px; padding: 16px; }
+.fstep .k { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--verde); font-weight: 600; margin-bottom: 6px; }
+.fstep b { font: 700 18px var(--font-d); display: block; margin-bottom: 6px; }
+.fstep p { font-size: 13px; color: var(--fg-muted); line-height: 1.5; }
+
+/* simulador */
+.sim { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 24px; align-items: start; }
+.sim label { display: block; font-size: 13px; color: var(--fg-muted); margin: 14px 0 6px; }
+.sim label:first-child { margin-top: 0; }
+.sim input[type=range] { width: 100%; accent-color: var(--verde); }
+.sim output { float: right; color: var(--fg); font-weight: 600; }
+.res { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.res div { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.res b { display: block; font: 800 28px var(--font-d); }
+.res span { font-size: 12px; color: var(--fg-muted); }
+.res .hl { border-color: rgba(61,181,74,.5); }
+.res .hl b { color: var(--verde); }
+
+/* tabelas */
+.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tbl th { text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--fg-muted); font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.tbl td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,.05); vertical-align: top; }
+.tbl td:last-child { white-space: nowrap; }
+.scroll { overflow-x: auto; }
+.who { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px; }
+.who.l { background: rgba(61,181,74,.15); color: var(--verde); }
+.who.g { background: rgba(255,255,255,.08); color: var(--fg); }
+.phases { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.phase h3 { font: 800 22px var(--font-d); margin-bottom: 2px; }
+.phase .d { font-size: 12px; color: var(--verde); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-bottom: 14px; }
+.kpi { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-top: 1px solid rgba(255,255,255,.06); font-size: 14px; }
+.kpi b { font-family: var(--font-d); font-size: 18px; white-space: nowrap; }
+.pillars { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; }
+.pillar { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.pillar i { font: 900 28px var(--font-d); font-style: normal; color: var(--verde); }
+.pillar b { display: block; font: 700 17px var(--font-d); margin: 4px 0 6px; }
+.pillar p { font-size: 13px; color: var(--fg-muted); line-height: 1.5; }
+.steps-list { counter-reset: s; display: grid; gap: 10px; }
+.steps-list li { list-style: none; counter-increment: s; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; }
+.steps-list li::before { content: counter(s, decimal-leading-zero); font: 900 22px var(--font-d); color: var(--verde); }
+.note { font-size: 13px; color: var(--fg-muted); margin-top: 14px; line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .two, .sim, .phases { grid-template-columns: 1fr; }
+  .funnel, .pillars { grid-template-columns: 1fr 1fr; }
+  .step { grid-template-columns: 90px 1fr; }
+  .step .r { grid-column: 1 / -1; }
+}
+@media (max-width: 520px) { .funnel, .pillars, .res { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="index.html"><div class="brand-icon">ETA</div><div class="brand-name">Escola de Tecnologias Assistidas</div></a>
+  <span class="muted" style="font-size:13px">Plano de marketing · Nov/2026</span>
+</nav>
+<div class="toc">
+  <a href="#diagnostico">Diagnóstico</a><a href="#posicionamento">Posicionamento</a><a href="#escada">Escada de produtos</a><a href="#funil">Funil de entrada</a><a href="#simulador">Simulador</a><a href="#canais">Canais</a><a href="#conteudo">Conteúdo</a><a href="#metas">Metas</a><a href="#calendario">Calendário</a><a href="#estrutura">Estrutura</a><a href="#proximos">Próximos passos</a>
+</div>
+
+<header class="bg-hero" style="background-image:url('assets/bg-neural.jpg')">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Plano de marketing · Novembro 2026 a Junho 2027</div>
+      <h1 class="h1">Escola de Tecnologias Assistidas</h1>
+      <p class="lead">Como a ETA sai de um conjunto de aulas e atendimentos sem marca para uma escola com produtos de R$ 47 a R$ 5.000, receita recorrente e uma rotina de aquisição que Leonardo consegue sustentar.</p>
+      <div class="meta"><span>Leonardo Dantas · professor</span><span>Glebe Duarte · estratégia e estrutura</span></div>
+    </div>
+    <div class="hero-cover" style="background-image:url('assets/afo-neurologica-cover.jpg')"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section class="sec" id="diagnostico">
+  <div class="num">01</div>
+  <h2 class="h2">Diagnóstico e contexto</h2>
+  <div class="two">
+    <div class="box"><h3>Onde Leonardo está</h3><p>Fisioterapeuta com atuação em tecnologias assistivas no RN. Dá aulas em graduações (UFRN, Farcisa, Unifasex), atende clínicas parceiras em Mossoró, Parelhas e Natal, e já tem a estrutura técnica montada (GitHub, Supabase, Panda Vídeo, Hotmart). O que falta é a escola: marca, posicionamento e uma comunicação que leve do caso clínico até uma oferta.</p></div>
+    <div class="box"><h3>O problema do mercado</h3><p>A disciplina de tecnologias assistivas é optativa ou pouco aproveitada nos cursos de fisioterapia do Brasil. O profissional sai da graduação sem saber prescrever, avaliar ou adaptar órteses e próteses para os pacientes neurológicos, pediátricos e ortopédicos que vai atender. Leonardo resolve essa lacuna e ainda não cobra por isso de forma estruturada.</p></div>
+  </div>
+</section>
+
+<section class="sec" id="posicionamento">
+  <div class="num">02</div>
+  <h2 class="h2">Posicionamento</h2>
+  <div class="quote">Sair sabendo fazer, não só sabendo que existe.</div>
+  <div class="two">
+    <div class="box"><h3>Público A · recém-formado</h3><p>De 0 a 3 anos de carreira. Percebe a lacuna na primeira semana de clínica, quando chega um paciente com pé caído ou uma criança com paralisia cerebral. Compra material pronto e curso curto primeiro.</p></div>
+    <div class="box"><h3>Público B · especialização</h3><p>Cinco anos ou mais de prática. Quer se aprofundar em neuro, pediátrico ou ortopédico e cobrar mais pela avaliação. É quem chega à formação anual e à visita clínica.</p></div>
+  </div>
+  <p class="note">Nome da marca: <b>Escola de Tecnologias Assistidas (ETA)</b>. Toda a comunicação usa esse nome.</p>
+</section>
+
+<section class="sec" id="escada">
+  <div class="num">03</div>
+  <h2 class="h2">Escada de produtos</h2>
+  <p class="lead">O plano anterior começava em R$ 97. Entram agora quatro materiais prontos entre R$ 47 e R$ 67, e um pacote de R$ 97. Eles servem para três coisas: vender para quem ainda não confia o bastante para um curso, pagar o tráfego pago e montar a lista de compradores que vai receber a formação.</p>
+  <div class="ladder">
+    <div class="step new"><div class="p">R$ 47<small>E-book</small></div><div><b>Guia de Prescrição de AFO <span class="pill">Novo</span></b><span class="f">PDF · 60 páginas</span></div><div class="r">Porta de entrada. Produto do anúncio e do QR Code nas aulas da graduação.</div></div>
+    <div class="step new"><div class="p">R$ 47<small>Guia prático</small></div><div><b>Guia de Medidas e Moldagem <span class="pill">Novo</span></b><span class="f">PDF ilustrado + 5 vídeos curtos</span></div><div class="r">Order bump natural do guia de prescrição: quem aprende a indicar precisa medir.</div></div>
+    <div class="step new"><div class="p">R$ 57<small>Modelos</small></div><div><b>Modelos de Laudo e Relatório <span class="pill">Novo</span></b><span class="f">12 modelos editáveis</span></div><div class="r">Resolve a dor de justificar a órtese ao médico e ao plano de saúde.</div></div>
+    <div class="step new"><div class="p">R$ 67<small>Fichas</small></div><div><b>Kit de Fichas de Avaliação <span class="pill">Novo</span></b><span class="f">4 fichas (Word, PDF e Google Docs)</span></div><div class="r">Material que o aluno usa toda semana. Leva a marca da ETA para dentro do consultório.</div></div>
+    <div class="step new"><div class="p">R$ 97<small>Pacote</small></div><div><b>Kit Clínico ETA <span class="pill">Novo</span></b><span class="f">Os 4 materiais (soma avulsa: R$ 218)</span></div><div class="r">Upsell na página de obrigado de qualquer material avulso.</div></div>
+    <div class="step"><div class="p">R$ 97<small>Curso</small></div><div><b>Curso de Especialidade</b><span class="f">Aulas gravadas + PDF</span></div><div class="r">AFO Neurológica, AFO Pediátrica, Membro Superior e IA na Clínica. Valida a demanda de cada tema.</div></div>
+    <div class="step"><div class="p">R$ 1.200 a 1.800<small>Por ano</small></div><div><b>Formação Principal</b><span class="f">10 meses · quinzenal ao vivo + biblioteca</span></div><div class="r">Receita recorrente e comunidade. Turma 1 em janeiro de 2027.</div></div>
+    <div class="step"><div class="p">R$ 3 a 5 mil<small>Imersão</small></div><div><b>Visita Clínica Guiada</b><span class="f">1 dia no consultório de Leonardo</span></div><div class="r">Alto valor percebido. Abre a conversa para acompanhamento individual.</div></div>
+  </div>
+  <p class="note">Ideias para as próximas versões da faixa de R$ 47 a R$ 97: planilha de controle de pacientes com órtese, pacote de slides para o fisioterapeuta explicar a órtese à família, mini-aula gravada de 40 minutos sobre um tema por vez (escoliose, cadeira de rodas, colete 3D).</p>
+</section>
+
+<section class="sec" id="funil">
+  <div class="num">04</div>
+  <h2 class="h2">Funil de entrada com ticket baixo</h2>
+  <div class="funnel">
+    <div class="fstep"><div class="k">Atração</div><b>Reels de caso clínico</b><p>Instagram orgânico, aula na graduação e anúncio pequeno (R$ 20 a R$ 30 por dia) levando à página do guia.</p></div>
+    <div class="fstep"><div class="k">Compra de R$ 47</div><b>Guia de Prescrição</b><p>Página curta com o problema, o sumário do e-book e o preço. Checkout na Hotmart.</p></div>
+    <div class="fstep"><div class="k">Order bump</div><b>+ Guia de Medidas</b><p>Caixa marcada no checkout por R$ 27 a mais. Sobe o ticket médio sem uma nova decisão.</p></div>
+    <div class="fstep"><div class="k">Página de obrigado</div><b>Kit Clínico ou curso</b><p>Oferta de um clique: Kit Clínico por R$ 97 ou o curso de AFO por R$ 97.</p></div>
+    <div class="fstep"><div class="k">Lista de compradores</div><b>Formação Principal</b><p>Quem comprou recebe convite para a aula ao vivo mensal e para a pré-inscrição da formação.</p></div>
+  </div>
+  <p class="note">Toda compra libera o acesso automaticamente na área de membros (webhook Hotmart para Supabase) e os arquivos ficam em "Materiais".</p>
+</section>
+
+<section class="sec" id="simulador">
+  <div class="num">05</div>
+  <h2 class="h2">Simulador do funil</h2>
+  <p class="lead">Mude os números para ver quanto o funil de entrada traz por mês e quantos compradores chegam à formação. As taxas são estimativas para planejar; troque pelos números reais depois do primeiro mês.</p>
+  <div class="sim box">
+    <form id="simf" onsubmit="return false">
+      <label>Vendas do guia de R$ 47 por mês <output id="o1"></output></label><input type="range" id="v" min="5" max="300" step="5" value="40">
+      <label>Aceitam o order bump (R$ 27) <output id="o2"></output></label><input type="range" id="b" min="0" max="60" step="5" value="30">
+      <label>Compram o upsell de R$ 97 <output id="o3"></output></label><input type="range" id="u" min="0" max="40" step="1" value="12">
+      <label>Entram na formação em até 6 meses <output id="o4"></output></label><input type="range" id="f" min="0" max="15" step="1" value="4">
+      <label>Investimento em anúncio por mês <output id="o5"></output></label><input type="range" id="a" min="0" max="3000" step="100" value="900">
+    </form>
+    <div class="res">
+      <div class="hl"><b id="r1"></b><span>Receita do funil no mês</span></div>
+      <div><b id="r2"></b><span>Ticket médio por comprador</span></div>
+      <div><b id="r3"></b><span>Resultado após anúncio</span></div>
+      <div><b id="r4"></b><span>Alunos da formação em 6 meses</span></div>
+      <div style="grid-column:1/-1"><b id="r5"></b><span>Receita da formação gerada por esses alunos (R$ 1.500 por ano)</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="canais">
+  <div class="num">06</div>
+  <h2 class="h2">Canais de aquisição</h2>
+  <div class="two">
+    <div class="box"><h3>Instagram orgânico · agora</h3><p>Casos clínicos com resultado visual têm alcance alto nesse nicho: pé amputado, fêmur curto, colete 3D, eye tracking para ELA. Rotina mínima: 2 posts por semana (1 caso, 1 educativo), 1 Reels por semana e stories diários. Todo caso termina apontando para o material de R$ 47 do mesmo tema.</p></div>
+    <div class="box"><h3>Graduações · médio prazo</h3><p>Leonardo dá aulas práticas na UFRN, Farcisa e Unifasex. Mini-aula gratuita de tecnologias assistivas no último semestre de cada turma, material com QR Code para o guia de R$ 47 e desconto para recém-formados no primeiro ano.</p></div>
+    <div class="box"><h3>Parceiros como afiliados</h3><p>Clínica pediátrica em Mossoró, fisio em Parelhas, estúdio de Pilates na Zona Norte e Unimed. Cada parceiro vira afiliado Hotmart com 20 a 30% sobre cursos e materiais vendidos. A comissão é sobre produto educacional, nunca sobre indicação de paciente.</p></div>
+    <div class="box"><h3>Eventos científicos</h3><p>Quatro reuniões científicas até dezembro de 2026; 5 de 31 clínicas confirmaram o primeiro. Em cada evento: inscrição da formação aberta, desconto para presentes, Kit de Fichas como brinde de inscrição e coleta de depoimentos.</p></div>
+  </div>
+</section>
+
+<section class="sec" id="conteudo">
+  <div class="num">07</div>
+  <h2 class="h2">Estratégia de conteúdo</h2>
+  <div class="pillars">
+    <div class="pillar"><i>1</i><b>Caso clínico real</b><p>O que foi difícil e como Leonardo resolveu. Reels ou carrossel.</p></div>
+    <div class="pillar"><i>2</i><b>Educação técnica</b><p>Um conceito ou protocolo em 1 minuto. Reels.</p></div>
+    <div class="pillar"><i>3</i><b>Bastidor da escola</b><p>Gravação, evento, visita clínica. Stories.</p></div>
+    <div class="pillar"><i>4</i><b>Prova social</b><p>Depoimento e resultado de aluno. Carrossel.</p></div>
+    <div class="pillar"><i>5</i><b>Convite direto</b><p>Chamada para o material, curso ou formação. Stories ou post.</p></div>
+  </div>
+  <div class="two" style="margin-top:20px">
+    <div class="box scroll"><table class="tbl"><tr><th>Formato</th><th>Frequência</th></tr><tr><td>Reels</td><td>3 por semana</td></tr><tr><td>Carrossel</td><td>2 por semana</td></tr><tr><td>Stories</td><td>Diário</td></tr><tr><td>Live</td><td>1 por mês</td></tr></table></div>
+    <div class="box"><h3>Roteiro de Reels de caso clínico</h3><ul><li>Gancho nos 5 primeiros segundos</li><li>O problema do paciente</li><li>A solução usada</li><li>Resultado visual</li><li>Chamada para o material do mesmo tema</li></ul></div>
+  </div>
+</section>
+
+<section class="sec" id="metas">
+  <div class="num">08</div>
+  <h2 class="h2">Metas por fase</h2>
+  <div class="phases">
+    <div class="box phase"><h3>Validação</h3><div class="d">Nov e Dez 2026</div>
+      <div class="kpi"><span>Vendas de materiais de R$ 47 a R$ 97</span><b>80</b></div>
+      <div class="kpi"><span>Alunos no primeiro curso de R$ 97</span><b>30</b></div>
+      <div class="kpi"><span>Conversão da página</span><b>3%</b></div>
+      <div class="kpi"><span>Seguidores no Instagram</span><b>+500</b></div>
+      <div class="kpi"><span>Afiliados formalizados</span><b>3</b></div>
+      <div class="kpi"><span>Eventos realizados</span><b>2</b></div>
+    </div>
+    <div class="box phase"><h3>Lançamento</h3><div class="d">Jan a Mar 2027</div>
+      <div class="kpi"><span>Alunos na turma 1 da formação</span><b>20</b></div>
+      <div class="kpi"><span>Faturamento do lançamento</span><b>R$ 24 mil</b></div>
+      <div class="kpi"><span>Compradores de material na lista</span><b>250</b></div>
+      <div class="kpi"><span>Leads para a turma 2</span><b>100</b></div>
+    </div>
+    <div class="box phase"><h3>Recorrência</h3><div class="d">Abr a Jun 2027</div>
+      <div class="kpi"><span>Alunos ativos na formação</span><b>40</b></div>
+      <div class="kpi"><span>Receita mensal (formação, cursos e materiais)</span><b>R$ 8 mil</b></div>
+      <div class="kpi"><span>NPS da formação</span><b>8,5+</b></div>
+      <div class="kpi"><span>Cancelamento por trimestre</span><b>&lt; 10%</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="calendario">
+  <div class="num">09</div>
+  <h2 class="h2">Calendário de ações · Nov e Dez 2026</h2>
+  <div class="box scroll">
+    <table class="tbl">
+      <tr><th>Semana</th><th>Ação</th><th>Quem</th></tr>
+      <tr><td>18 a 24/11</td><td>Aprovar a marca Escola de Tecnologias Assistidas e a identidade visual</td><td><span class="who l">Leonardo</span> <span class="who g">Glebe</span></td></tr>
+      <tr><td>18 a 24/11</td><td>Página de vendas do Guia de Prescrição (R$ 47) e checkout com order bump</td><td><span class="who g">Glebe</span></td></tr>
+      <tr><td>18 a 24/11</td><td>Gravar os 3 primeiros Reels de caso clínico</td><td><span class="who l">Leonardo</span></td></tr>
+      <tr><td>18 a 24/11</td><td>Revisar o conteúdo técnico do guia e das fichas</td><td><span class="who l">Leonardo</span></td></tr>
+      <tr><td>25 a 30/11</td><td>Lançar o Guia de R$ 47 e o curso de AFO Neurológica para a base</td><td><span class="who l">Leonardo</span> <span class="who g">Glebe</span></td></tr>
+      <tr><td>25 a 30/11</td><td>Começar anúncio de R$ 30 por dia para a página do guia</td><td><span class="who g">Glebe</span></td></tr>
+      <tr><td>01 a 07/12</td><td>Evento científico 1 com oferta presencial e Kit de Fichas como brinde</td><td><span class="who l">Leonardo</span></td></tr>
+      <tr><td>01 a 07/12</td><td>Formalizar 3 parceiros como afiliados</td><td><span class="who l">Leonardo</span></td></tr>
+      <tr><td>08 a 14/12</td><td>Ajustar preços e oferta com os dados das primeiras vendas</td><td><span class="who g">Glebe</span></td></tr>
+      <tr><td>08 a 14/12</td><td>Lançar Modelos de Laudo e Kit Clínico</td><td><span class="who l">Leonardo</span> <span class="who g">Glebe</span></td></tr>
+      <tr><td>08 a 14/12</td><td>Abrir pré-inscrição da Formação Principal para a lista de compradores</td><td><span class="who l">Leonardo</span> <span class="who g">Glebe</span></td></tr>
+      <tr><td>15 a 21/12</td><td>Evento científico 2</td><td><span class="who l">Leonardo</span></td></tr>
+      <tr><td>15 a 21/12</td><td>Fechar a turma 1 da Formação Principal</td><td><span class="who l">Leonardo</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="sec" id="estrutura">
+  <div class="num">10</div>
+  <h2 class="h2">Plataforma e estrutura</h2>
+  <div class="two">
+    <div class="box scroll"><table class="tbl">
+      <tr><th>Função</th><th>Ferramenta</th></tr>
+      <tr><td>Site, páginas de produto e área de membros</td><td>Plataforma própria (Vercel)</td></tr>
+      <tr><td>Banco de dados e login</td><td>Supabase</td></tr>
+      <tr><td>Vídeos</td><td>Panda Vídeo</td></tr>
+      <tr><td>Checkout, order bump e afiliados</td><td>Hotmart</td></tr>
+      <tr><td>Código</td><td>GitHub</td></tr>
+      <tr><td>E-mail para compradores</td><td>A definir (Brevo ou ActiveCampaign)</td></tr>
+    </table></div>
+    <div class="box"><h3>Situação</h3><ul>
+      <li>Pronto: site com cursos e materiais lidos do banco, página de cada produto, área de membros com cursos, aulas, progresso, materiais, anotações, certificados e perfil.</li>
+      <li>Falta: links de checkout da Hotmart em cada produto, deploy do webhook que libera o acesso, upload dos arquivos dos materiais e dos vídeos no Panda.</li>
+      <li>Falta: e-mail de boas-vindas automático após a compra.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="sec" id="proximos" style="border-bottom:0">
+  <div class="num">11</div>
+  <h2 class="h2">Próximos passos</h2>
+  <ol class="steps-list">
+    <li><div><b>Escrever o Guia de Prescrição de AFO.</b> Leonardo passa o conteúdo técnico, Glebe diagrama. Primeiro produto à venda.</div></li>
+    <li><div><b>Criar os produtos na Hotmart</b> (guia, guia de medidas como order bump, kit clínico, cursos) e colar os links de checkout na plataforma.</div></li>
+    <li><div><b>Gravar os 3 primeiros Reels de caso clínico</b> com chamada para o guia.</div></li>
+    <li><div><b>Publicar o webhook da Hotmart</b> para que cada compra libere o acesso sozinha.</div></li>
+    <li><div><b>Formalizar 3 parceiros como afiliados</b> nas semanas 2 e 3.</div></li>
+    <li><div><b>Usar o evento científico de dezembro</b> como primeiro funil presencial.</div></li>
+  </ol>
+  <p class="note">Este plano é revisado a cada 15 dias com os números reais de vendas e conteúdo.</p>
+</section>
+
+</main>
+
+<footer class="footer"><span>© 2026 Escola de Tecnologias Assistidas</span><a href="index.html">Ver o site</a></footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const brl = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+function calc() {
+  const v = +$('v').value, b = +$('b').value / 100, u = +$('u').value / 100, f = +$('f').value / 100, a = +$('a').value;
+  $('o1').textContent = v; $('o2').textContent = Math.round(b * 100) + '%'; $('o3').textContent = Math.round(u * 100) + '%'; $('o4').textContent = Math.round(f * 100) + '%'; $('o5').textContent = brl(a);
+  const rec = v * 47 + v * b * 27 + v * u * 97;
+  const alunos6 = v * 6 * f;
+  $('r1').textContent = brl(rec);
+  $('r2').textContent = brl(v ? rec / v : 0);
+  $('r3').textContent = brl(rec - a);
+  $('r3').style.color = rec - a < 0 ? '#f87171' : '';
+  $('r4').textContent = Math.round(alunos6);
+  $('r5').textContent = brl(Math.round(alunos6) * 1500);
+}
+document.querySelectorAll('#simf input').forEach(i => i.addEventListener('input', calc));
+calc();
+</script>
+</body>
+</html>

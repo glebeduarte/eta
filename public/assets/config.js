@@ -11,6 +11,7 @@ window.eta = window.supabase.createClient(window.ETA_CONFIG.SUPABASE_URL, window
 window.etaUtil = {
   esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); },
   hours(min) { if (!min) return ''; const h = Math.floor(min / 60), m = min % 60; return h ? (m ? `${h}h${String(m).padStart(2,'0')}` : `${h}h`) : `${m} min`; },
+  price(v) { return v == null ? '' : 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: Number(v) % 1 ? 2 : 0 }); },
   plural(n, s, p) { return `${n} ${n === 1 ? s : p}`; },
   coverStyle(c) {
     return c.cover_url

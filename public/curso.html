@@ -29,7 +29,7 @@
 <script src="assets/config.js"></script>
 <script>
 (async () => {
-  const { esc, hours, plural, coverStyle } = etaUtil;
+  const { esc, hours, plural, coverStyle, price } = etaUtil;
   const app = document.getElementById('app');
   const slug = new URLSearchParams(location.search).get('c');
   const [{ data: c }, { data: outline }] = await Promise.all([
@@ -47,22 +47,26 @@
   }
   const nLessons = mods.reduce((a, m) => a + m.lessons.length, 0);
 
+  const isMat = c.kind === 'material';
+  const buy = c.checkout_url
+    ? `<a class="btn btn-primary" href="${esc(c.checkout_url)}" target="_blank" rel="noopener">Comprar por ${price(c.price)}</a>`
+    : `<a class="btn btn-primary" href="membros.html#/curso/${encodeURIComponent(c.slug)}">${isMat ? 'Acessar o material' : 'Acessar o curso'}</a>`;
+  const meta = isMat
+    ? `<span>${esc(c.format || '')}</span><span>Acesso imediato</span><span>Por ${esc(c.instructor || 'Leonardo Dantas')}</span>`
+    : `<span>${plural(mods.length, 'módulo', 'módulos')}</span><span>${plural(nLessons, 'aula', 'aulas')}</span><span>${hours(c.duration_min)} de conteúdo</span><span>Com ${esc(c.instructor || 'Leonardo Dantas')}</span>`;
+
   app.innerHTML = `
   <header class="bg-hero" style="background-image:url('${c.bg_url || 'assets/bg-neural.jpg'}')">
     <div class="hero-inner">
       <div>
-        <div class="eyebrow">${esc(c.category)}${c.level ? ' · ' + esc(c.level) : ''}</div>
+        <div class="eyebrow">${esc(c.category)}${c.level && !isMat ? ' · ' + esc(c.level) : ''}</div>
         <h1 class="h1">${esc(c.title)}</h1>
         <p class="lead">${esc(c.subtitle || c.description)}</p>
-        <div class="meta">
-          <span>${plural(mods.length, 'módulo', 'módulos')}</span>
-          <span>${plural(nLessons, 'aula', 'aulas')}</span>
-          <span>${hours(c.duration_min)} de conteúdo</span>
-          <span>Com ${esc(c.instructor || 'Leonardo Dantas')}</span>
-        </div>
+        <div class="meta">${meta}</div>
+        ${c.price ? `<div class="price-big">${price(c.price)}<small>pagamento único${isMat ? '' : ' · acesso pela área de membros'}</small></div>` : ''}
         <div class="actions">
-          <a class="btn btn-primary" href="membros.html#/curso/${encodeURIComponent(c.slug)}">Acessar o curso</a>
-          <a class="btn btn-ghost" href="#ementa">Ver ementa</a>
+          ${buy}
+          <a class="btn btn-ghost" href="#detalhes">${isMat ? 'O que vem no material' : 'Ver ementa'}</a>
         </div>
       </div>
       <div class="hero-cover" style="${coverStyle(c)}"></div>
@@ -70,9 +74,9 @@
   </header>
 
   <main class="wrap">
-    ${c.description ? `<section class="section"><h2 class="h2">Sobre o curso</h2><p class="lead" style="max-width:720px">${esc(c.description)}</p></section>` : ''}
-    ${(c.outcomes || []).length ? `<section class="section"><h2 class="h2">O que você vai aprender</h2><div class="outcomes">${c.outcomes.map(o => `<div class="outcome">${esc(o)}</div>`).join('')}</div></section>` : ''}
-    <section class="section" id="ementa">
+    ${c.description ? `<section class="section"><h2 class="h2">${isMat ? 'Sobre o material' : 'Sobre o curso'}</h2><p class="lead" style="max-width:720px">${esc(c.description)}</p></section>` : ''}
+    ${(c.outcomes || []).length ? `<section class="section" id="${isMat ? 'detalhes' : ''}"><h2 class="h2">${isMat ? 'O que vem no material' : 'O que você vai aprender'}</h2><div class="outcomes">${c.outcomes.map(o => `<div class="outcome">${esc(o)}</div>`).join('')}</div></section>` : ''}
+    ${isMat ? '' : `<section class="section" id="detalhes">
       <h2 class="h2">Ementa</h2>
       ${mods.map((m, i) => `
         <div class="mod ${i === 0 ? 'open' : ''}">
@@ -90,6 +94,17 @@
               </div>`).join('')}
           </div>
         </div>`).join('')}
+    </section>`}
+    <section class="section">
+      <h2 class="h2">${isMat ? 'Quem preparou' : 'Quem ensina'}</h2>
+      <div class="instructor">
+        <div class="instructor-avatar">${esc((c.instructor || 'L')[0])}</div>
+        <div><b>${esc(c.instructor || 'Leonardo Dantas')}</b><p class="muted" style="line-height:1.6">${esc(c.instructor_bio || '')}</p></div>
+      </div>
+    </section>
+    <section class="section" style="text-align:center">
+      <div class="price-big">${price(c.price)}</div>
+      <div class="actions" style="justify-content:center">${buy}</div>
     </section>
   </main>`;
 })();

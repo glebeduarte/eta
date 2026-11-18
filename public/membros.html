@@ -40,6 +40,37 @@
 .side { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; }
 .side-head { padding: 0 2px 12px; }
 .side-head b { font: 700 18px var(--font-d); display: block; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 8px 0 18px; overflow-x: auto; }
+.tab { padding: 10px 16px; font-size: 14px; color: var(--fg-muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tab.on { color: var(--fg); border-color: var(--verde); }
+.notes { width: 100%; min-height: 160px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; color: var(--fg); font: inherit; font-size: 15px; line-height: 1.6; resize: vertical; }
+.notes:focus { outline: none; border-color: var(--verde); }
+.mat-ico { width: 36px; height: 36px; flex: none; border-radius: 8px; background: rgba(61,181,74,.12); color: var(--verde); display: grid; place-items: center; font: 700 11px var(--font-b); text-transform: uppercase; }
+.material-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.material-main div { min-width: 0; }
+.soon { font-size: 12px; color: var(--fg-dim); white-space: nowrap; }
+.mat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; }
+.mat-grid .material { margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 36px; }
+.stat { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.stat b { display: block; font: 800 32px var(--font-d); }
+.stat span { font-size: 12px; color: var(--fg-muted); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 16px; }
+.cert-card .card-cover { display: grid; place-items: center; text-align: center; padding: 18px; background: linear-gradient(145deg, #0f1a10, #061006); border-bottom: 1px solid rgba(61,181,74,.3); }
+.cert-mini { font: 700 12px var(--font-d); letter-spacing: 2px; text-transform: uppercase; color: var(--verde); }
+.cert-mini-title { font: 800 20px/1.1 var(--font-d); margin: 8px 0; }
+.cert-locked { opacity: .55; }
+/* certificado */
+.cert-page { max-width: 960px; margin: 32px auto; padding: 0 var(--gutter); }
+.cert { aspect-ratio: 1.414; background: #fbfaf5; color: #10140f; border-radius: 6px; padding: 6%; display: flex; flex-direction: column; justify-content: space-between; border: 10px solid #0a0d0a; outline: 2px solid var(--verde); outline-offset: -22px; }
+.cert-brand { display: flex; align-items: center; gap: 10px; font: 700 15px var(--font-d); letter-spacing: 1px; text-transform: uppercase; }
+.cert-brand i { width: 30px; height: 30px; background: var(--verde); border-radius: 6px; display: grid; place-items: center; font: 900 12px var(--font-d); font-style: normal; color: #000; }
+.cert h1 { font: 900 clamp(26px, 5vw, 54px)/1 var(--font-d); letter-spacing: 1px; text-transform: uppercase; }
+.cert-name { font: 800 clamp(24px, 4.5vw, 46px) var(--font-d); color: #1d7a28; border-bottom: 1px solid #c9cdbf; padding-bottom: 8px; }
+.cert p { font-size: clamp(12px, 1.6vw, 16px); line-height: 1.6; color: #3b4239; }
+.cert-foot { display: flex; justify-content: space-between; gap: 16px; font-size: clamp(10px, 1.3vw, 13px); color: #5b6258; }
+.cert-sign { border-top: 1px solid #10140f; padding-top: 6px; min-width: 40%; }
+@media print { .nav, .footer, .no-print { display: none !important; } body { background: #fff; } .cert-page { margin: 0; max-width: none; } }
 .btn-done.is-done { background: transparent; border: 1px solid var(--verde); color: var(--verde); }
 
 @media (max-width: 1000px) {
@@ -58,23 +89,27 @@
 const { esc, hours, plural, coverStyle } = etaUtil;
 const root = document.getElementById('root');
 
-const S = { user: null, profile: null, courses: [], enrolled: new Set(), progress: new Map(), outlines: {} };
+const S = { user: null, profile: null, courses: [], enrolled: new Set(), progress: new Map(), outlines: {}, materials: [] };
+const isMat = c => c.kind === 'material';
+const MAT_LABEL = { pdf: 'PDF', ebook: 'PDF', slides: 'PPT', checklist: 'PDF', ficha: 'DOC', modelo: 'DOC', planilha: 'XLS', link: 'URL', video: 'MP4', 'apresentação': 'PPT', outro: 'ARQ' };
 
 // ───────── DATA ─────────
 async function loadBase() {
   const uid = S.user.id;
-  const [c, e, p, pr] = await Promise.all([
+  const [c, e, p, pr, mt] = await Promise.all([
     eta.from('courses').select('*').eq('is_published', true).order('position'),
     eta.from('enrollments').select('course_id,status,expires_at').eq('user_id', uid),
     eta.from('progress').select('lesson_id,course_id,completed,watched_pct,last_watched').eq('user_id', uid),
-    eta.from('profiles').select('*').eq('id', uid).maybeSingle()
+    eta.from('profiles').select('*').eq('id', uid).maybeSingle(),
+    eta.from('materials').select('*').order('position')
   ]);
+  S.materials = mt.data || [];
   S.courses = c.data || [];
   const now = Date.now();
   S.enrolled = new Set((e.data || []).filter(x => x.status === 'active' && (!x.expires_at || new Date(x.expires_at) > now)).map(x => x.course_id));
   S.progress = new Map((p.data || []).map(x => [x.lesson_id, x]));
   S.profile = pr.data || { full_name: '', email: S.user.email };
-  await Promise.all(S.courses.map(loadOutline));
+  await Promise.all(S.courses.filter(c => !isMat(c)).map(loadOutline));
 }
 
 async function loadOutline(course) {
@@ -113,6 +148,8 @@ function shell(active, html) {
     <div class="nav-links">
       <a class="nav-link ${active === 'home' ? 'active' : ''}" href="#/">Início</a>
       <a class="nav-link ${active === 'cursos' ? 'active' : ''}" href="#/cursos">Meus cursos</a>
+      <a class="nav-link ${active === 'materiais' ? 'active' : ''}" href="#/materiais">Materiais</a>
+      <a class="nav-link ${active === 'certificados' ? 'active' : ''}" href="#/certificados">Certificados</a>
       <a class="nav-link ${active === 'perfil' ? 'active' : ''}" href="#/perfil" title="Perfil"><span class="user-btn">${esc(initial)}</span></a>
     </div>
   </nav>
@@ -121,7 +158,29 @@ function shell(active, html) {
   window.scrollTo(0, 0);
 }
 
+function materialRow(m) {
+  const ext = MAT_LABEL[m.type] || 'ARQ';
+  const action = m.url
+    ? `<a class="btn btn-ghost btn-sm" href="${esc(m.url)}" target="_blank" rel="noopener">Baixar</a>`
+    : `<span class="soon">Arquivo em breve</span>`;
+  return `<div class="material"><div class="material-main"><span class="mat-ico">${ext}</span><div><div>${esc(m.title)}</div><div class="bar-label">${esc(m.size_label || '')}</div></div></div>${action}</div>`;
+}
+const materialsOf = (c, lessonId) => S.materials.filter(m => m.course_id === c.id && (lessonId === undefined ? true : m.lesson_id === lessonId));
+
 function courseCard(c) {
+  if (isMat(c)) {
+    const owned = S.enrolled.has(c.id);
+    return `
+    <a class="card" href="${owned ? '#/curso/' + c.slug : 'curso.html?c=' + encodeURIComponent(c.slug)}">
+      <div class="card-cover" style="${coverStyle(c)}"><span class="card-badge ${owned ? 'ok' : ''}">${owned ? 'Liberado' : esc(c.category)}</span></div>
+      <div class="card-body">
+        <div class="card-tag">${esc(c.category)}</div>
+        <div class="card-title">${esc(c.title)}</div>
+        <div class="card-meta">${esc(c.format || '')}</div>
+        ${owned ? '' : `<div class="card-price">${etaUtil.price(c.price)}</div>`}
+      </div>
+    </a>`;
+  }
   const st = stats(c), owned = S.enrolled.has(c.id);
   const href = owned ? `#/curso/${c.slug}` : `curso.html?c=${encodeURIComponent(c.slug)}`;
   return `
@@ -140,10 +199,12 @@ function courseCard(c) {
 
 // ───────── PAGES ─────────
 function pageHome() {
-  const mine = S.courses.filter(c => S.enrolled.has(c.id));
-  const others = S.courses.filter(c => !S.enrolled.has(c.id));
+  const mine = S.courses.filter(c => S.enrolled.has(c.id) && !isMat(c));
+  const myMats = S.courses.filter(c => S.enrolled.has(c.id) && isMat(c));
+  const others = S.courses.filter(c => !S.enrolled.has(c.id) && !isMat(c));
+  const otherMats = S.courses.filter(c => !S.enrolled.has(c.id) && isMat(c));
   const recent = [...S.progress.values()].sort((a, b) => new Date(b.last_watched) - new Date(a.last_watched));
-  const featured = (recent[0] && S.courses.find(c => c.id === recent[0].course_id && S.enrolled.has(c.id))) || mine[0] || S.courses[0];
+  const featured = (recent[0] && S.courses.find(c => c.id === recent[0].course_id && S.enrolled.has(c.id))) || mine[0] || S.courses.find(c => !isMat(c));
 
   const cont = [];
   for (const p of recent) {
@@ -184,12 +245,14 @@ function pageHome() {
       <section class="section"><div class="row-title">Meus cursos</div>
         ${mine.length ? `<div class="grid">${mine.map(courseCard).join('')}</div>` : '<p class="muted">Você ainda não tem cursos liberados. Veja os cursos disponíveis abaixo.</p>'}
       </section>
+      ${myMats.length ? `<section class="section"><div class="row-title">Meus materiais</div><div class="grid">${myMats.map(courseCard).join('')}</div></section>` : ''}
       ${others.length ? `<section class="section"><div class="row-title">Outros cursos da ETA</div><div class="grid">${others.map(courseCard).join('')}</div></section>` : ''}
+      ${otherMats.length ? `<section class="section"><div class="row-title">Materiais prontos</div><div class="grid">${otherMats.map(courseCard).join('')}</div></section>` : ''}
     </main>`);
 }
 
 function pageCursos() {
-  const mine = S.courses.filter(c => S.enrolled.has(c.id));
+  const mine = S.courses.filter(c => S.enrolled.has(c.id) && !isMat(c));
   shell('cursos', `<main class="wrap section"><h1 class="h2">Meus cursos</h1>
     ${mine.length ? `<div class="grid">${mine.map(courseCard).join('')}</div>` : '<p class="muted">Nenhum curso liberado na sua conta.</p>'}</main>`);
 }
@@ -223,9 +286,37 @@ function curriculum(c, currentId) {
   }).join('');
 }
 
+function instructorCard(c) {
+  return `<section class="section"><h2 class="h2">${isMat(c) ? 'Quem preparou' : 'Seu professor'}</h2><div class="instructor"><div class="instructor-avatar">${esc((c.instructor || 'L')[0])}</div><div><b>${esc(c.instructor || 'Leonardo Dantas')}</b><p class="muted" style="line-height:1.6">${esc(c.instructor_bio || '')}</p></div></div></section>`;
+}
+
+function pageMaterialProduto(c) {
+  const owned = S.enrolled.has(c.id), mats = materialsOf(c);
+  shell('materiais', `
+    <header class="bg-hero" style="background-image:url('${c.bg_url || 'assets/bg-neural.jpg'}')">
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow">${esc(c.category)}</div>
+          <h1 class="h1">${esc(c.title)}</h1>
+          <p class="lead">${esc(c.subtitle || c.description)}</p>
+          <div class="meta"><span>${esc(c.format || '')}</span><span>Por ${esc(c.instructor || 'Leonardo Dantas')}</span></div>
+          <div class="actions">${owned ? '<a class="btn btn-primary" href="#arquivos">Baixar arquivos</a>' : `<a class="btn btn-primary" href="curso.html?c=${encodeURIComponent(c.slug)}">Comprar por ${etaUtil.price(c.price)}</a>`}</div>
+        </div>
+        <div class="hero-cover" style="${coverStyle(c)}"></div>
+      </div>
+    </header>
+    <main class="wrap">
+      ${owned ? `<section class="section" id="arquivos"><h2 class="h2">Arquivos</h2>${mats.length ? `<div class="mat-grid">${mats.map(materialRow).join('')}</div>` : '<p class="muted">Os arquivos serão disponibilizados em breve.</p>'}</section>` : ''}
+      ${(c.outcomes || []).length ? `<section class="section"><h2 class="h2">O que vem no material</h2><div class="outcomes">${c.outcomes.map(o => `<div class="outcome">${esc(o)}</div>`).join('')}</div></section>` : ''}
+      ${c.description ? `<section class="section"><h2 class="h2">Sobre o material</h2><p class="lead" style="max-width:720px">${esc(c.description)}</p></section>` : ''}
+      ${instructorCard(c)}
+    </main>`);
+}
+
 function pageCurso(slug) {
   const c = courseBySlug(slug);
   if (!c) return shell('', '<div class="center-msg">Curso não encontrado.</div>');
+  if (isMat(c)) return pageMaterialProduto(c);
   const st = stats(c), nx = nextLesson(c), owned = S.enrolled.has(c.id);
   const mods = S.outlines[c.id] || [];
   shell('cursos', `
@@ -253,7 +344,10 @@ function pageCurso(slug) {
     <main class="wrap">
       ${(c.outcomes || []).length ? `<section class="section"><h2 class="h2">O que você vai aprender</h2><div class="outcomes">${c.outcomes.map(o => `<div class="outcome">${esc(o)}</div>`).join('')}</div></section>` : ''}
       <section class="section"><h2 class="h2">Conteúdo do curso</h2>${curriculum(c)}</section>
+      ${owned && materialsOf(c).length ? `<section class="section"><h2 class="h2">Materiais do curso</h2><div class="mat-grid">${materialsOf(c).map(materialRow).join('')}</div></section>` : ''}
+      ${owned && st.pct === 100 ? `<section class="section"><h2 class="h2">Certificado</h2><a class="btn btn-primary" href="#/certificado/${c.slug}">Ver meu certificado</a></section>` : ''}
       ${c.description ? `<section class="section"><h2 class="h2">Sobre o curso</h2><p class="lead" style="max-width:720px">${esc(c.description)}</p></section>` : ''}
+      ${instructorCard(c)}
     </main>`);
 }
 
@@ -263,9 +357,10 @@ async function pageAula(id) {
   if (!hasAccess(c, l)) return shell('', `<div class="center-msg">Esta aula faz parte de <b>${esc(c.title)}</b> e não está liberada na sua conta.<br><br><a class="btn btn-primary" href="curso.html?c=${encodeURIComponent(c.slug)}">Conhecer o curso</a></div>`);
 
   shell('cursos', '<div class="center-msg">Carregando aula…</div>');
-  const [{ data: full }, { data: mats }] = await Promise.all([
+  const [{ data: full }, { data: mats }, { data: note }] = await Promise.all([
     eta.from('lessons').select('*').eq('id', id).maybeSingle(),
-    eta.from('materials').select('*').eq('lesson_id', id)
+    eta.from('materials').select('*').eq('lesson_id', id),
+    eta.from('notes').select('body').eq('lesson_id', id).eq('user_id', S.user.id).maybeSingle()
   ]);
   if (location.hash !== '#/aula/' + id) return; // usuário navegou durante o carregamento
 
@@ -294,9 +389,17 @@ async function pageAula(id) {
             ${nextL ? `<a class="btn btn-ghost btn-sm" href="#/aula/${nextL.id}">Próxima →</a>` : ''}
           </div>
         </div>
-        ${full?.description ? `<p class="lesson-desc">${esc(full.description)}</p>` : ''}
-        ${(mats || []).length ? `<div class="materials"><div class="row-title">Materiais</div>${mats.map(m => `
-          <div class="material"><span>${esc(m.title)}</span><a class="linkish" href="${esc(m.url)}" target="_blank" rel="noopener">Abrir</a></div>`).join('')}</div>` : ''}
+        <div class="tabs" role="tablist">
+          <button class="tab on" data-tab="t-mat">Materiais</button>
+          <button class="tab" data-tab="t-notas">Anotações</button>
+          <button class="tab" data-tab="t-sobre">Sobre a aula</button>
+        </div>
+        <div id="t-mat">${(() => { const all = [...(mats || []), ...materialsOf(c, null)]; return all.length ? all.map(materialRow).join('') : '<p class="muted">Esta aula não tem materiais de apoio.</p>'; })()}</div>
+        <div id="t-notas" hidden>
+          <textarea class="notes" id="noteBody" placeholder="Suas anotações sobre esta aula. Elas ficam salvas na sua conta.">${esc(note?.body || '')}</textarea>
+          <div class="bar-label" id="noteMsg" style="margin-top:8px">${note?.body ? 'Anotação salva.' : ''}</div>
+        </div>
+        <div id="t-sobre" hidden>${full?.description ? `<p class="lesson-desc">${esc(full.description)}</p>` : '<p class="muted">Sem descrição para esta aula.</p>'}<p class="bar-label" style="margin-top:12px">${esc(l.module_title)}${l.duration_min ? ' · ' + l.duration_min + ' min' : ''}</p></div>
       </div>
       <aside class="side">
         <div class="side-head"><b>${esc(c.title)}</b><span class="bar-label">${stats(c).pct}% concluído</span></div>
@@ -304,6 +407,19 @@ async function pageAula(id) {
       </aside>
     </div>`);
 
+  document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+    ['t-mat', 't-notas', 't-sobre'].forEach(k => document.getElementById(k).hidden = k !== t.dataset.tab);
+  });
+  let noteTimer;
+  document.getElementById('noteBody').oninput = e => {
+    const msg = document.getElementById('noteMsg'); msg.textContent = 'Salvando…';
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(async () => {
+      const { error } = await eta.from('notes').upsert({ user_id: S.user.id, lesson_id: id, body: e.target.value, updated_at: new Date().toISOString() }, { onConflict: 'user_id,lesson_id' });
+      msg.textContent = error ? 'Não foi possível salvar.' : 'Anotação salva.';
+    }, 700);
+  };
   document.getElementById('btnDone').onclick = async () => {
     row.completed = !row.completed;
     row.watched_pct = row.completed ? 100 : row.watched_pct;
@@ -313,13 +429,82 @@ async function pageAula(id) {
   };
 }
 
+function pageMateriais() {
+  const groups = S.courses.filter(c => S.enrolled.has(c.id) && materialsOf(c).length);
+  shell('materiais', `<main class="wrap section">
+    <h1 class="h2">Materiais</h1>
+    <p class="muted" style="margin:-8px 0 28px">Protocolos, fichas, slides e e-books dos seus cursos e materiais.</p>
+    ${groups.length ? groups.map(c => `
+      <section style="margin-bottom:36px">
+        <div class="row-title"><a href="#/curso/${c.slug}">${esc(c.title)}</a></div>
+        <div class="mat-grid">${materialsOf(c).map(materialRow).join('')}</div>
+      </section>`).join('') : '<p class="muted">Nenhum material liberado ainda.</p>'}
+    ${S.courses.some(c => isMat(c) && !S.enrolled.has(c.id)) ? `<section class="section"><div class="row-title">Materiais prontos da ETA</div><div class="grid">${S.courses.filter(c => isMat(c) && !S.enrolled.has(c.id)).map(courseCard).join('')}</div></section>` : ''}
+  </main>`);
+}
+
+function pageCertificados() {
+  const mine = S.courses.filter(c => S.enrolled.has(c.id) && !isMat(c));
+  shell('certificados', `<main class="wrap section">
+    <h1 class="h2">Certificados</h1>
+    <p class="muted" style="margin:-8px 0 28px">O certificado é liberado quando você conclui todas as aulas do curso.</p>
+    ${mine.length ? `<div class="grid">${mine.map(c => {
+      const st = stats(c), done = st.total && st.pct === 100;
+      return `<${done ? 'a href="#/certificado/' + c.slug + '"' : 'div'} class="card cert-card ${done ? '' : 'cert-locked'}">
+        <div class="card-cover"><div><div class="cert-mini">Escola de Tecnologias Assistidas</div><div class="cert-mini-title">${esc(c.title)}</div><div class="cert-mini">${done ? 'Certificado de conclusão' : '🔒 ' + st.pct + '% concluído'}</div></div></div>
+        <div class="card-body"><div class="card-meta">${done ? 'Disponível · ' + hours(c.duration_min) : `Faltam ${st.total - st.done} de ${st.total} aulas`}</div></div>
+      </${done ? 'a' : 'div'}>`;
+    }).join('')}</div>` : '<p class="muted">Você ainda não tem cursos.</p>'}
+  </main>`);
+}
+
+function pageCertificado(slug) {
+  const c = courseBySlug(slug);
+  if (!c) return shell('', '<div class="center-msg">Curso não encontrado.</div>');
+  const st = stats(c);
+  if (!S.enrolled.has(c.id) || !st.total || st.pct < 100) return shell('certificados', `<div class="center-msg">Conclua todas as aulas de <b>${esc(c.title)}</b> para liberar o certificado.<br><br><a class="btn btn-primary" href="#/curso/${c.slug}">Voltar ao curso</a></div>`);
+  const last = lessonsOf(c).map(l => S.progress.get(l.id)?.last_watched).filter(Boolean).sort().pop();
+  const date = new Date(last || Date.now()).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+  shell('certificados', `<div class="cert-page">
+    <div class="actions no-print" style="margin-bottom:16px"><a class="btn btn-ghost btn-sm" href="#/certificados">← Certificados</a><button class="btn btn-primary btn-sm" onclick="window.print()">Imprimir ou salvar em PDF</button></div>
+    <div class="cert">
+      <div class="cert-brand"><i>ETA</i>Escola de Tecnologias Assistidas</div>
+      <div>
+        <h1>Certificado de conclusão</h1>
+        <p style="margin:18px 0 8px">Certificamos que</p>
+        <div class="cert-name">${esc(S.profile.full_name || S.user.email)}</div>
+        <p style="margin-top:14px">concluiu o curso <b>${esc(c.title)}</b>, com carga horária de ${hours(c.duration_min)}, em ${date}.</p>
+      </div>
+      <div class="cert-foot"><div class="cert-sign">${esc(c.instructor || 'Leonardo Dantas')}<br>Professor responsável</div><div style="text-align:right">Código: ${esc(c.id.slice(0, 8).toUpperCase())}-${esc(S.user.id.slice(0, 6).toUpperCase())}</div></div>
+    </div>
+  </div>`);
+}
+
 function pagePerfil() {
   const p = S.profile;
   shell('perfil', `
     <main class="wrap section" style="max-width:560px">
       <h1 class="h2">Meu perfil</h1>
+      ${(() => {
+        const mine = S.courses.filter(c => S.enrolled.has(c.id) && !isMat(c));
+        const doneL = [...S.progress.values()].filter(x => x.completed);
+        const mins = doneL.reduce((a, x) => a + (findLesson(x.lesson_id).l?.duration_min || 0), 0);
+        const certs = mine.filter(c => { const st = stats(c); return st.total && st.pct === 100; }).length;
+        return `<div class="stats">
+          <div class="stat"><b>${mine.length}</b><span>Cursos ativos</span></div>
+          <div class="stat"><b>${doneL.length}</b><span>Aulas concluídas</span></div>
+          <div class="stat"><b>${hours(mins) || '0 min'}</b><span>Tempo de aula concluído</span></div>
+          <div class="stat"><b>${certs}</b><span>Certificados</span></div>
+        </div>`;
+      })()}
       <div class="field"><label>E-mail</label><input value="${esc(S.user.email)}" disabled></div>
-      <div class="field"><label for="pName">Nome</label><input id="pName" value="${esc(p.full_name)}"></div>
+      <div class="field"><label for="pName">Nome completo (sai no certificado)</label><input id="pName" value="${esc(p.full_name)}"></div>
+      <div class="form-grid">
+        <div class="field"><label for="pWpp">WhatsApp</label><input id="pWpp" type="tel" value="${esc(p.whatsapp)}" placeholder="(84) 90000-0000"></div>
+        <div class="field"><label for="pArea">Área de atuação</label><input id="pArea" value="${esc(p.area)}" placeholder="Ex.: Fisioterapia neurológica"></div>
+        <div class="field"><label for="pCity">Cidade</label><input id="pCity" value="${esc(p.city)}"></div>
+        <div class="field"><label for="pState">Estado</label><input id="pState" value="${esc(p.state)}" maxlength="2" placeholder="UF"></div>
+      </div>
       <div class="field"><label for="pBio">Sobre você</label><textarea id="pBio" rows="4">${esc(p.bio)}</textarea></div>
       <div class="msg" id="pMsg"></div>
       <button class="btn btn-primary" id="pSave">Salvar</button>
@@ -328,13 +513,15 @@ function pagePerfil() {
       <div class="field"><label for="pPass">Nova senha</label><input id="pPass" type="password" autocomplete="new-password" minlength="8"></div>
       <div class="msg" id="pwMsg"></div>
       <button class="btn btn-ghost" id="pwSave">Atualizar senha</button>
+      <div style="margin-top:48px"><button class="btn btn-ghost" onclick="logout()">Sair da conta</button></div>
     </main>`);
   document.getElementById('pSave').onclick = async () => {
-    const full_name = document.getElementById('pName').value.trim(), bio = document.getElementById('pBio').value.trim();
-    const { error } = await eta.from('profiles').update({ full_name, bio }).eq('id', S.user.id);
+    const v = id => document.getElementById(id).value.trim();
+    const upd = { full_name: v('pName'), bio: v('pBio'), whatsapp: v('pWpp'), area: v('pArea'), city: v('pCity'), state: v('pState').toUpperCase() };
+    const { error } = await eta.from('profiles').update(upd).eq('id', S.user.id);
     const m = document.getElementById('pMsg');
     if (error) { m.className = 'msg err'; m.textContent = 'Erro ao salvar.'; return; }
-    Object.assign(S.profile, { full_name, bio }); m.className = 'msg ok'; m.textContent = 'Perfil salvo.';
+    Object.assign(S.profile, upd); m.className = 'msg ok'; m.textContent = 'Perfil salvo.';
   };
   document.getElementById('pwSave').onclick = async () => {
     const password = document.getElementById('pPass').value, m = document.getElementById('pwMsg');
@@ -384,6 +571,9 @@ function route() {
   if (h[0] === 'curso' && h[1]) return pageCurso(decodeURIComponent(h[1]));
   if (h[0] === 'aula' && h[1]) return pageAula(h[1]);
   if (h[0] === 'cursos') return pageCursos();
+  if (h[0] === 'materiais') return pageMateriais();
+  if (h[0] === 'certificados') return pageCertificados();
+  if (h[0] === 'certificado' && h[1]) return pageCertificado(decodeURIComponent(h[1]));
   if (h[0] === 'perfil') return pagePerfil();
   pageHome();
 }

@@ -24,7 +24,7 @@
       <p class="lead">Cursos práticos de AFO neurológica, pediátrica e membro superior para fisioterapeutas que prescrevem e adaptam órteses na rotina da clínica.</p>
       <div class="actions">
         <a class="btn btn-primary" href="#cursos">Ver cursos</a>
-        <a class="btn btn-ghost" href="membros.html">Já sou aluno</a>
+        <a class="btn btn-ghost" href="#materiais">Materiais a partir de R$ 47</a>
       </div>
     </div>
     <div class="hero-cover" style="background-image:url('assets/afo-neurologica-cover.jpg')"></div>
@@ -37,6 +37,13 @@
   <div class="grid" id="grid"><p class="muted">Carregando cursos…</p></div>
 </main>
 
+<section class="wrap section" id="materiais">
+  <div class="eyebrow">Para usar amanhã no consultório</div>
+  <h2 class="h2">Materiais prontos</h2>
+  <p class="lead" style="margin-top:-8px">E-books, fichas e modelos editáveis a partir de R$ 47.</p>
+  <div class="grid" id="grid-mat"></div>
+</section>
+
 <footer class="footer">
   <span>© 2026 Escola de Tecnologias Assistidas</span>
   <a href="membros.html">Área de membros</a>
@@ -46,19 +53,29 @@
 <script src="assets/config.js"></script>
 <script>
 (async () => {
-  const { esc, hours, coverStyle } = etaUtil;
+  const { esc, hours, coverStyle, price } = etaUtil;
   const grid = document.getElementById('grid');
   const { data, error } = await eta.from('courses')
-    .select('slug,title,subtitle,category,duration_min,cover_url,modules(id)')
+    .select('slug,title,subtitle,category,duration_min,cover_url,kind,price,format,modules(id)')
     .eq('is_published', true).order('position');
   if (error || !data) { grid.innerHTML = '<p class="muted">Não foi possível carregar os cursos agora.</p>'; return; }
-  grid.innerHTML = data.map(c => `
+  document.getElementById('grid-mat').innerHTML = data.filter(c => c.kind === 'material').map(c => `
+    <a class="card" href="curso.html?c=${encodeURIComponent(c.slug)}">
+      <div class="card-cover" style="${coverStyle(c)}"><span class="card-badge">${esc(c.category)}</span></div>
+      <div class="card-body">
+        <div class="card-title">${esc(c.title)}</div>
+        <div class="card-meta">${esc(c.format || '')}</div>
+        <div class="card-price">${price(c.price)}</div>
+      </div>
+    </a>`).join('');
+  grid.innerHTML = data.filter(c => c.kind !== 'material').map(c => `
     <a class="card" href="curso.html?c=${encodeURIComponent(c.slug)}">
       <div class="card-cover" style="${coverStyle(c)}"></div>
       <div class="card-body">
         <div class="card-tag">${esc(c.category)}</div>
         <div class="card-title">${esc(c.title)}</div>
         <div class="card-meta">${c.modules.length} módulos · ${hours(c.duration_min)} de conteúdo</div>
+        ${c.price ? `<div class="card-price">${price(c.price)}</div>` : ''}
       </div>
     </a>`).join('');
 })();
