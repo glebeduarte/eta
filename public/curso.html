@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Curso · ETA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/eta.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="index.html"><div class="brand-icon">ETA</div><div class="brand-name">Escola de Tecnologias Assistidas</div></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html#cursos">Cursos</a>
+    <a class="btn btn-primary btn-sm" href="membros.html">Área de membros</a>
+  </div>
+</nav>
+
+<div id="app"><div class="center-msg">Carregando…</div></div>
+
+<footer class="footer">
+  <span>© 2026 Escola de Tecnologias Assistidas</span>
+  <a href="index.html">Todos os cursos</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+<script src="assets/config.js"></script>
+<script>
+(async () => {
+  const { esc, hours, plural, coverStyle } = etaUtil;
+  const app = document.getElementById('app');
+  const slug = new URLSearchParams(location.search).get('c');
+  const [{ data: c }, { data: outline }] = await Promise.all([
+    eta.from('courses').select('*').eq('slug', slug).eq('is_published', true).maybeSingle(),
+    eta.rpc('course_outline', { p_slug: slug })
+  ]);
+  if (!c) { app.innerHTML = '<div class="center-msg">Curso não encontrado. <a href="index.html" style="color:var(--verde)">Ver todos os cursos</a></div>'; return; }
+  document.title = c.title + ' · ETA';
+
+  const mods = [];
+  for (const r of outline || []) {
+    let m = mods.find(x => x.id === r.module_id);
+    if (!m) mods.push(m = { id: r.module_id, title: r.module_title, lessons: [] });
+    if (r.lesson_id) m.lessons.push(r);
+  }
+  const nLessons = mods.reduce((a, m) => a + m.lessons.length, 0);
+
+  app.innerHTML = `
+  <header class="bg-hero" style="background-image:url('${c.bg_url || 'assets/bg-neural.jpg'}')">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow">${esc(c.category)}${c.level ? ' · ' + esc(c.level) : ''}</div>
+        <h1 class="h1">${esc(c.title)}</h1>
+        <p class="lead">${esc(c.subtitle || c.description)}</p>
+        <div class="meta">
+          <span>${plural(mods.length, 'módulo', 'módulos')}</span>
+          <span>${plural(nLessons, 'aula', 'aulas')}</span>
+          <span>${hours(c.duration_min)} de conteúdo</span>
+          <span>Com ${esc(c.instructor || 'Leonardo Dantas')}</span>
+        </div>
+        <div class="actions">
+          <a class="btn btn-primary" href="membros.html#/curso/${encodeURIComponent(c.slug)}">Acessar o curso</a>
+          <a class="btn btn-ghost" href="#ementa">Ver ementa</a>
+        </div>
+      </div>
+      <div class="hero-cover" style="${coverStyle(c)}"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    ${c.description ? `<section class="section"><h2 class="h2">Sobre o curso</h2><p class="lead" style="max-width:720px">${esc(c.description)}</p></section>` : ''}
+    ${(c.outcomes || []).length ? `<section class="section"><h2 class="h2">O que você vai aprender</h2><div class="outcomes">${c.outcomes.map(o => `<div class="outcome">${esc(o)}</div>`).join('')}</div></section>` : ''}
+    <section class="section" id="ementa">
+      <h2 class="h2">Ementa</h2>
+      ${mods.map((m, i) => `
+        <div class="mod ${i === 0 ? 'open' : ''}">
+          <button class="mod-head" onclick="this.parentElement.classList.toggle('open')">
+            <span class="mod-title">${i + 1}. ${esc(m.title)}</span>
+            <span class="mod-meta">${plural(m.lessons.length, 'aula', 'aulas')}</span>
+          </button>
+          <div class="mod-body">
+            ${m.lessons.map(l => `
+              <div class="les">
+                <span class="les-ico">${l.is_free ? '▶' : '🔒'}</span>
+                <span class="les-title">${esc(l.lesson_title)}</span>
+                ${l.is_free ? '<span class="tag-free">Grátis</span>' : ''}
+                <span class="les-dur">${l.duration_min ? l.duration_min + ' min' : ''}</span>
+              </div>`).join('')}
+          </div>
+        </div>`).join('')}
+    </section>
+  </main>`;
+})();
+</script>
+</body>
+</html>

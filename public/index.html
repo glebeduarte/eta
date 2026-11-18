@@ -2,196 +2,66 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Escola de Tecnologias Assistidas</title>
-<meta name="description" content="Cursos de especialização em órteses e tecnologias assistivas para fisioterapeutas. AFO neurológica, pediátrica e membro superior.">
+<meta name="description" content="Cursos de especialização em órteses e tecnologias assistivas para fisioterapeutas.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap">
-<style>
-:root {
-  --verde: #3DB54A;
-  --bg: #0a0d0a;
-  --fg: #e8f0e8;
-  --fg-muted: #9ca3af;
-  --border: rgba(255,255,255,0.08);
-  --font-d: 'Barlow Condensed', sans-serif;
-  --font-b: 'Inter', sans-serif;
-  color-scheme: dark;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-b); background: var(--bg); color: var(--fg); min-height: 100vh; }
-a { color: inherit; text-decoration: none; }
-
-/* NAV */
-nav {
-  position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 max(24px, env(safe-area-inset-left,0px));
-  height: 64px;
-  background: rgba(10,13,10,.92); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-}
-.nav-brand { display: flex; align-items: center; gap: 10px; }
-.nav-icon {
-  width: 32px; height: 32px; background: var(--verde);
-  border-radius: 7px; display: grid; place-items: center;
-  font-size: 16px; font-weight: 900; font-family: var(--font-d);
-  color: #000; letter-spacing: -1px;
-}
-.nav-name { font-family: var(--font-d); font-size: 17px; font-weight: 700; letter-spacing: .5px; }
-.nav-cta {
-  background: var(--verde); color: #000; border: none;
-  padding: 8px 18px; border-radius: 6px; font-size: 13px;
-  font-weight: 600; cursor: pointer; font-family: var(--font-b);
-}
-.nav-cta:hover { background: #4cd358; }
-
-/* HERO */
-.hero {
-  padding: max(80px, 10vw) max(24px, env(safe-area-inset-left,0px));
-  max-width: 760px;
-  margin: 0 auto;
-  text-align: center;
-}
-.hero-tag {
-  display: inline-block;
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--verde); font-weight: 600;
-  border: 1px solid rgba(61,181,74,.35);
-  padding: 4px 12px; border-radius: 20px; margin-bottom: 24px;
-}
-.hero-h1 {
-  font-family: var(--font-d); font-size: clamp(44px, 8vw, 80px);
-  font-weight: 900; line-height: 1; letter-spacing: -1px;
-  margin-bottom: 20px; text-wrap: balance;
-}
-.hero-h1 span { color: var(--verde); }
-.hero-sub { font-size: 17px; color: var(--fg-muted); line-height: 1.6; max-width: 560px; margin: 0 auto 36px; }
-.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.btn-hero {
-  background: var(--verde); color: #000; border: none;
-  padding: 14px 28px; border-radius: 8px; font-size: 15px;
-  font-weight: 600; cursor: pointer; font-family: var(--font-b);
-}
-.btn-hero:hover { background: #4cd358; }
-.btn-hero-sec {
-  background: transparent; color: var(--fg); border: 1px solid var(--border);
-  padding: 14px 28px; border-radius: 8px; font-size: 15px;
-  font-weight: 500; cursor: pointer; font-family: var(--font-b);
-}
-.btn-hero-sec:hover { border-color: rgba(255,255,255,.2); }
-
-/* CURSOS */
-.section { padding: 80px max(24px, env(safe-area-inset-left,0px)); max-width: 1100px; margin: 0 auto; }
-.section-label {
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--verde); font-weight: 600; margin-bottom: 12px;
-}
-.section-title {
-  font-family: var(--font-d); font-size: clamp(28px, 4vw, 42px);
-  font-weight: 800; letter-spacing: -.5px; margin-bottom: 40px;
-}
-.courses-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;
-}
-.course-card-lp {
-  background: #161c16; border: 1px solid var(--border);
-  border-radius: 10px; overflow: hidden;
-  transition: border-color .2s, transform .2s;
-}
-.course-card-lp:hover { border-color: rgba(61,181,74,.3); transform: translateY(-3px); }
-.course-thumb-lp {
-  width: 100%; aspect-ratio: 16/10;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 48px;
-  background-size: cover; background-position: center;
-  position: relative; overflow: hidden;
-}
-.cover-neuro { background-image: url('assets/afo-neurologica-cover.jpg'); }
-.cover-ped   { background-image: url('assets/afo-pediatrica-cover.jpg'); }
-.cover-orto  { background-image: url('assets/membro-superior-cover.jpg'); }
-.cover-ia    { background: linear-gradient(135deg,#2b1a0d 0%,#3d2b1a 50%,#1f1a0d 100%); }
-.course-body-lp { padding: 16px; }
-.course-tag-lp {
-  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--verde); font-weight: 600; margin-bottom: 6px;
-}
-.course-title-lp { font-family: var(--font-d); font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-.course-meta-lp { font-size: 12px; color: var(--fg-muted); }
-
-/* FOOTER */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 32px max(24px, env(safe-area-inset-left,0px));
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 16px;
-  font-size: 13px; color: var(--fg-muted);
-}
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/eta.css">
 </head>
 <body>
 
-<nav>
-  <div class="nav-brand">
-    <div class="nav-icon">ETA</div>
-    <div class="nav-name">Escola de Tecnologias Assistidas</div>
-  </div>
-  <button class="nav-cta" onclick="location.href='membros.html'">Área de membros →</button>
+<nav class="nav">
+  <a class="brand" href="index.html"><div class="brand-icon">ETA</div><div class="brand-name">Escola de Tecnologias Assistidas</div></a>
+  <a class="btn btn-primary btn-sm" href="membros.html">Área de membros</a>
 </nav>
 
-<section class="hero">
-  <div class="hero-tag">Especialização em Tecnologias Assistivas</div>
-  <h1 class="hero-h1">Prescreva órteses<br><span>com segurança clínica</span></h1>
-  <p class="hero-sub">Cursos práticos de AFO neurológica, pediátrica e membro superior para fisioterapeutas que querem dominar a prescrição e adaptação de órteses.</p>
-  <div class="hero-actions">
-    <button class="btn-hero" onclick="document.getElementById('cursos').scrollIntoView({behavior:'smooth'})">Ver cursos</button>
-    <button class="btn-hero-sec" onclick="location.href='membros.html'">Acessar plataforma</button>
+<header class="bg-hero" style="background-image:url('assets/bg-neural.jpg')">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Especialização em tecnologias assistivas</div>
+      <h1 class="h1">Prescreva órteses com segurança clínica</h1>
+      <p class="lead">Cursos práticos de AFO neurológica, pediátrica e membro superior para fisioterapeutas que prescrevem e adaptam órteses na rotina da clínica.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#cursos">Ver cursos</a>
+        <a class="btn btn-ghost" href="membros.html">Já sou aluno</a>
+      </div>
+    </div>
+    <div class="hero-cover" style="background-image:url('assets/afo-neurologica-cover.jpg')"></div>
   </div>
-</section>
+</header>
 
-<div class="section" id="cursos">
-  <div class="section-label">Formações disponíveis</div>
-  <div class="section-title">Cursos da ETA</div>
-  <div class="courses-grid">
-    <div class="course-card-lp">
-      <div class="course-thumb-lp cover-neuro"></div>
-      <div class="course-body-lp">
-        <div class="course-tag-lp">Neurologia</div>
-        <div class="course-title-lp">AFO Neurológica na Prática</div>
-        <div class="course-meta-lp">4 módulos · 20 aulas · 8h de conteúdo</div>
-      </div>
-    </div>
-    <div class="course-card-lp">
-      <div class="course-thumb-lp cover-ped"></div>
-      <div class="course-body-lp">
-        <div class="course-tag-lp">Pediátrica</div>
-        <div class="course-title-lp">AFO Pediátrica: Crescimento e Adaptação</div>
-        <div class="course-meta-lp">3 módulos · 15 aulas · 6h de conteúdo</div>
-      </div>
-    </div>
-    <div class="course-card-lp">
-      <div class="course-thumb-lp cover-orto"></div>
-      <div class="course-body-lp">
-        <div class="course-tag-lp">Membro Superior</div>
-        <div class="course-title-lp">Órteses de Membro Superior na Reabilitação</div>
-        <div class="course-meta-lp">4 módulos · 20 aulas · 7h de conteúdo</div>
-      </div>
-    </div>
-    <div class="course-card-lp">
-      <div class="course-thumb-lp cover-ia"></div>
-      <div class="course-body-lp">
-        <div class="course-tag-lp">Tecnologia</div>
-        <div class="course-title-lp">IA na Clínica de Reabilitação</div>
-        <div class="course-meta-lp">3 módulos · 12 aulas · 4h de conteúdo</div>
-      </div>
-    </div>
-  </div>
-</div>
+<main class="wrap section" id="cursos">
+  <div class="eyebrow">Formações</div>
+  <h2 class="h2">Cursos da ETA</h2>
+  <div class="grid" id="grid"><p class="muted">Carregando cursos…</p></div>
+</main>
 
-<footer>
+<footer class="footer">
   <span>© 2026 Escola de Tecnologias Assistidas</span>
   <a href="membros.html">Área de membros</a>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+<script src="assets/config.js"></script>
+<script>
+(async () => {
+  const { esc, hours, coverStyle } = etaUtil;
+  const grid = document.getElementById('grid');
+  const { data, error } = await eta.from('courses')
+    .select('slug,title,subtitle,category,duration_min,cover_url,modules(id)')
+    .eq('is_published', true).order('position');
+  if (error || !data) { grid.innerHTML = '<p class="muted">Não foi possível carregar os cursos agora.</p>'; return; }
+  grid.innerHTML = data.map(c => `
+    <a class="card" href="curso.html?c=${encodeURIComponent(c.slug)}">
+      <div class="card-cover" style="${coverStyle(c)}"></div>
+      <div class="card-body">
+        <div class="card-tag">${esc(c.category)}</div>
+        <div class="card-title">${esc(c.title)}</div>
+        <div class="card-meta">${c.modules.length} módulos · ${hours(c.duration_min)} de conteúdo</div>
+      </div>
+    </a>`).join('');
+})();
+</script>
 </body>
 </html>
