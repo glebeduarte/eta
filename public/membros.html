@@ -1100,6 +1100,7 @@ img { display: block; max-width: 100%; }
 .cover-neuro { background: #061a06 url('assets/afo-neurologica-cover.jpg') center/cover no-repeat; }
 .cover-neuro-2 { background: linear-gradient(145deg, #0a1a06 0%, #152a08 100%); }
 .cover-ped { background: #0f1408 url('assets/afo-pediatrica-cover.jpg') center/cover no-repeat; }
+.cover-ms { background: #020a1a url('assets/membro-superior-cover.jpg') center/cover no-repeat; }
 .cover-orto { background: linear-gradient(145deg, #1a0f06 0%, #2a1a08 100%); }
 .cover-ia { background: linear-gradient(145deg, #12061a 0%, #1f0d2a 100%); }
 </style>
@@ -1276,6 +1277,22 @@ img { display: block; max-width: 100%; }
               <div class="course-card-progress">
                 <div class="progress-track"><div class="progress-fill" style="width:60%"></div></div>
                 <div class="progress-label">60% — 9 de 15 aulas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-card" onclick="goDetalhe('orto-membro-superior')">
+            <div class="course-card-thumb">
+              <div class="course-cover course-cover-gradient cover-ms"></div>
+              <div class="course-cover-overlay"></div>
+              <div class="course-card-play"><div class="play-circle">▶</div></div>
+            </div>
+            <div class="course-card-body">
+              <div class="course-card-tag">Membro Superior</div>
+              <div class="course-card-name">Órteses de Membro Superior na Reabilitação</div>
+              <div class="course-card-meta">4 módulos · 20 aulas</div>
+              <div class="course-card-progress">
+                <div class="progress-label">Comece agora</div>
               </div>
             </div>
           </div>
@@ -1991,6 +2008,16 @@ const CURSOS = {
     students: '800 alunos',
     color: 'cover-ped',
     bg: 'assets/bg-pediatrica.jpg'
+  },
+  'orto-membro-superior': {
+    title: 'Órteses de Membro Superior na Reabilitação',
+    category: 'Membro Superior',
+    icon: '',
+    lessons: '4 módulos · 20 aulas',
+    duration: '7h de conteúdo',
+    students: '650 alunos',
+    color: 'cover-ms',
+    bg: 'assets/bg-membro-superior.jpg'
   }
 };
 
